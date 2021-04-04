@@ -7,6 +7,7 @@ var app = express();
 const flash = require('connect-flash');
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
+const apiRouter = require('./api/user')
 require('dotenv').config()
 
 const mongoose = require('mongoose')
@@ -48,6 +49,7 @@ app.use('/auth', authRouter);
 
 app.use(ensureAuth)
 app.use('/', indexRouter);
+app.use('/api', apiRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
