@@ -36,7 +36,8 @@ router.get(
                 if (err) {
 					return next(err);
                 }
-                const token = generateAccessToken({ userId: user.id })
+				// const token = generateAccessToken({ userId: user.id })
+				res.cookie('id', user.userId)
 				return res.redirect('/');
 			});
 		})(req, res, next);
