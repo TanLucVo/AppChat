@@ -11,11 +11,6 @@ const RoomSchema = mongoose.Schema({
 		required: true,
     },
 
-    message:{
-        type: Array,
-        required:true
-    }
-
 })
 
 module.exports = mongoose.model('room', RoomSchema)

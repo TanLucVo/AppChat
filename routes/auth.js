@@ -37,7 +37,7 @@ router.get(
 					return next(err);
                 }
 				// const token = generateAccessToken({ userId: user.id })
-				res.cookie('id', user.userId)
+				res.cookie('idUser', user.userId)
 				return res.redirect('/');
 			});
 		})(req, res, next);

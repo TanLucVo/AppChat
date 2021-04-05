@@ -20,6 +20,7 @@
 	<script src="https://cdn.socket.io/3.1.3/socket.io.min.js"
 		integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous">
 	</script>
+	<script src="/javascript/main.js"></script>
 </head>
 
 <body class="dark">
@@ -63,7 +64,12 @@
 				</div>
 			</div>
 			<div class="user_left">
-				<div class="user__left__item user_display d-flex align-items-center">
+				<div class="loading hide d-flex justify-content-center hide">
+					<div class="spinner-border text-primary" role="status">
+						<span class="visually-hidden">Loading...</span>
+					</div>
+				</div>
+				<!-- <div class="user__left__item user_display d-flex align-items-center">
 					<div class="user__left__item__img">
 						<img src="https://www.hebergementwebs.com/image/ec/eca71f9e3aabc2c6af43482274a8189f.jpg/la-dragonball-house-edition-forbids-sharing-manga-images-and-gif-1.jpg"
 							alt="user">
@@ -72,17 +78,8 @@
 						<span class="partner_name">asdasdas</span>
 						<span class="partner_mess">Ban: asdasd</span>
 					</div>
-				</div>
-				<div class="user__left__item user_display d-flex align-items-center active">
-					<div class="user__left__item__img">
-						<img src="https://www.hebergementwebs.com/image/ec/eca71f9e3aabc2c6af43482274a8189f.jpg/la-dragonball-house-edition-forbids-sharing-manga-images-and-gif-1.jpg"
-							alt="user">
-					</div>
-					<div class="user__left__item__mess d-flex flex-column justify-content-center  align-items-baseline">
-						<span class="partner_name">asdasdas</span>
-						<span class="partner_mess">Ban: asdasd</span>
-					</div>
-				</div>
+				</div> -->
+
 			</div>
 		</div>
 		<div class="right_chat">
@@ -170,17 +167,6 @@
 					<div class="mess-container my_message">
 						<div class="mess">asdasd</div>
 					</div>
-					<div class="mess-container my_message">
-						<div class="mess">asdasd</div>
-					</div>
-					<div class="mess-container my_message">
-						<div class="mess">asdasd</div>
-					</div>
-					<div class="mess-container my_message">
-						<div class="mess">
-							asdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123d
-						</div>
-					</div>
 				</div>
 			</div>
 			<form action="" class="form_chat d-flex justify-content-between align-items-center">
@@ -195,17 +181,9 @@
 </body>
 
 <script>
-	$('.input_chat').on('keydown', function (e) {
-		if (e.keyCode === 13 && e.shiftKey === false) {
-			console.log("gui")
-			console.log($('.input_chat').html())
-			return false;
-		}
-	});
-
 	$(document).ready(function () {
 		if ($(".chat-container")[0]) {
-
+			let dataTemp = []
 			const socket = io()
 			socket.on('connect', () => {
 				console.log("Da ket noi thanh cong voi id" + socket.id)
@@ -251,124 +229,65 @@
 				}
 			})
 			$(document).on("click", ".user_display", async function () {
-				let id = $(".user_display").data("id")
-				let chatroom = $(".room-container[data-id=" + id + "]")
+				let userId = $(this).data("userid")
+				let roomId = $(this).data("roomid")
+				console.log(userId, roomId)
 				//create message  container
-				if (!chatroom[0]) {
-					chatroom = document.createElement('div');
-					chatroom.classList.add("room-container")
-					chatroom.dataset.id = id
-					chatroom = $(chatroom)
-					loadAndDiaplayRoomByID(id)
+				
+				if($(".user_left  .room-container[data-roomid=" + roomId + "]")[0]){
+					console.log("Co roi")
+					let chatroom = $(".user_left  .room-container[data-roomid=" + roomId + "]")
+					$(".right_chat .room-container").replaceWith(chatroom.clone())
+					chatroom =await loadAndDiaplayRoomByID(userId, chatroom)
+				}else{
+					console.log("chua co")
+					let newchatroom ;
+					newchatroom = document.createElement('div');
+					newchatroom.classList.add("room-container")
+					newchatroom.dataset.userid = userId
+					newchatroom.dataset.roomid = roomId
+					newchatroom = $(newchatroom)
+					$(".user_left").append(`<div class="room-container" data-userid=${userId} data-roomid=${roomId}></div>`)
+					$(".right_chat .room-container").replaceWith(newchatroom)
+					let a  =await loadAndDiaplayRoomByID(userId, newchatroom)
 				}
 
+				
 
 
+				// $(".user_left").append(chatroom)
 
+				
 			});
 			loadAndDiaplayRoom()
+			$('.input_chat').on('keydown', function (e) {
+				if (e.keyCode === 13 && e.shiftKey === false) {
+					$(".form_chat").submit();
+					return false
+				}
+				
+			});
+			$(".form_chat ").submit(e=>{
+				e.preventDefault()
+				let message = $(".input_chat").text()
+
+				$(".input_chat").text("")
+				if($(".room-container").children().last().hasClass("me")){
+					$(".me").last().append(`<div class="mess-container my_message">
+										<div class="mess">${message}</div>
+									</div>`)
+				}
+				$(".room-container").animate({
+					scrollTop: $(".room-container").height()
+				}, 0);
+				
+			})
 		}
 
 	})
-	async function loadAndDiaplayRoom() {
-		//loadmessage
-		try {
-			let cookie = document.cookie
-			cookie = cookie.replace("id=","")
-			const response = await fetch("/api/getRoom", {
-				method: 'POST',
-				credentials: 'same-origin', // include, *same-origin, omit
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					id: cookie,
-				})
-			});
-			let data = await response.json()
-			console.log(data)
-		} catch (error) {
-			console.log(error)
-		}
-
-	}
-	async function loadAndDiaplayRoomByID(id) {
-		//loadmessage
-		let cookie = document.cookie
-			cookie = cookie.replace("id=","")
-		const response = await fetch("/api/getRoomById", {
-			method: 'POST',
-			credentials: 'same-origin', // include, *same-origin, omit
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				id2: id,
-			})
-		});
-		let data = await response.json()
-		console.log(data)
-
-	}
-	async function loadAndDisplayUser() {
-		setTimeout(() => {
-			if (!$("#collapseSearch").hasClass("show")) {
-				$("#collapseSearch").collapse("show")
-			}
-			$(".collapseSearchCard .loading").removeClass("hide")
-			$(".collapseSearchCard").children().not(':first').remove();
-
-			$(".collapseSearchCard").children().not(':first').promise().done(async function () {
-				let query = $("#search-input").val().trim()
-				if (query === "") {
-					$(".collapseSearchCard .loading").addClass("hide")
-					return
-				}
-				let string = ""
-				try {
-
-					const response = await fetch("/api/getUser", {
-						method: 'POST',
-						credentials: 'same-origin', // include, *same-origin, omit
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							query: query
-						})
-					});
-					let data = await response.json()
-
-					for (let i of data.data) {
-						string += `<div class="user_search user_display d-flex align-items-center" data-id="${i.id}">
-									<div class="user_search__img">
-										<img src="${i.image}"
-											alt="user">
-									</div>
-									<div class="user_search__name ms-2">
-										<p class="mb-0">${i.name}</p>
-									</div>
-								</div>`
-					}
-
-					$(".collapseSearchCard").append(string)
-					$(".collapseSearchCard .loading").addClass("hide")
 
 
-
-				} catch (error) {
-					$(".collapseSearchCard").append(string)
-					$(".collapseSearchCard .loading").addClass("hide")
-				}
-
-			});
-		}, 0);
-
-	}
-
-	function delay(ms) {
-		return new Promise(resolve => setTimeout(resolve, ms));
-	}
+	
 </script>
 
 </html>

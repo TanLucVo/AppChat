@@ -190,7 +190,7 @@ body.dark {
 
 .room-container {
     padding: 0 22px 8px 8px;
-    overflow-y: scroll;
+    overflow-y: auto;
     flex: 1;
 }
 
@@ -354,7 +354,7 @@ body.dark {
     border-radius: 10px;
 }
 
-.collapseSearchCard .loading.hide{
+.loading.hide{
     display: none !important;
 }
 
@@ -380,6 +380,9 @@ body.dark {
 }
 .user_search__name{
     font-size: 18px;
+}
+.user_left  .room-container{
+    display: none !important;
 }
 
 @media only screen and (max-width: 550px) {

@@ -2,25 +2,12 @@ var express = require('express');
 const room = require('../models/room');
 const user = require('../models/user');
 var router = express.Router();
-
+const messageModel = require('../models/message')
 /* GET home page. */
 router.get('/',  function (req, res, next) {
 
 });
 
-router.post('/getUser', async function (req, res, next) {
-    let {query} = req.body;
-    console.log(query)
-    try {
-        let data = await user.find({userId :{ $ne: req.user.userId } ,$text: { $search: query }})
-        data = data.map(e => ({ id: e.userId, name: e.name, image: e.image }))
-        res.status(200).json({ data: data })
-        
-    } catch (error) {
-        console.log(error)
-        res.status(500).send("Can't get data")
-    }
-});
 
 router.post('/getUser', async function (req, res, next) {
     let {query} = req.body;
@@ -36,14 +23,25 @@ router.post('/getUser', async function (req, res, next) {
 });
 
 router.post('/getRoom', async function (req, res, next) {
-    let { id } = req.body;
-    console.log(req.body)
+    let id = req.user.userId
+    const filter=async (item)=>{
+        let partner = item.users.filter(e => e.id != id) 
+        let partnerInfo = await user.findOne({userId: partner[0].id})
+        let image =partnerInfo.image
+        return {roomId: item._id, userId: partner[0].id, name: partner[0].name, image: image}
+    }
+    const getAllfilter=(data)=>{
+        const promises = data.map(async item=> await filter(item))
+        return Promise.all(promises);
+    }
     if (!id) {
         return res.send("Missing id")
     }
     try {
+
         let data = await room.find({"users.id": id})
-        res.status(200).json({ data: data })
+        let filterData =await getAllfilter(data)
+        res.status(200).json({ data: filterData  })
         
     } catch (error) {
         console.log(error)
@@ -90,11 +88,9 @@ router.post('/getRoomById', async function (req, res, next) {
                         "name":user2.name
                     }
                 ],
-
-                message:[]
             }
             dataroom = await room.create(newRoom)
-            return res.status(200).json({ data: dataroom })
+            return res.status(200).json({ data: dataroom, image:user2.image })
         }
         res.status(200).json({ data: data })
         
@@ -102,6 +98,27 @@ router.post('/getRoomById', async function (req, res, next) {
         console.log(error)
         res.status(500).send("Can't get data")
     }
+});
+router.post('/newMessage', async function (req, res, next) {
+    let {roomId, message, createAt} = req.body
+    if(!roomId || !message || !createAt){
+        return res.status(300).send("Invalid data")
+    }
+    let newMessage = {
+        userId: req.user.userId,
+        roomId: roomId,
+        message:message,
+        createAt: Date.now()
+    }
+    messageModel.insertOne(newMessage, function(err, res) {
+        if (err){
+            return res.status(300).send("Khong the them")
+        }
+        else{
+            return res.status(200).send("success")
+        }
+
+    });
 });
 
 
