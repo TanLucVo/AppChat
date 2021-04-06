@@ -2,7 +2,9 @@ var express = require('express');
 const room = require('../models/room');
 const user = require('../models/user');
 var router = express.Router();
-const messageModel = require('../models/message')
+const messageModel = require('../models/message');
+const socketIO = require('../config/SocketIO');
+const io = socketIO.io;
 /* GET home page. */
 router.get('/',  function (req, res, next) {
 
@@ -50,8 +52,7 @@ router.post('/getRoom', async function (req, res, next) {
 });
 
 router.post('/getRoomById', async function (req, res, next) {
-    let {id2} = req.body;
-    
+    let {id2, afterId} = req.body;
     let user1 = req.user
     if (!id2) {
         return res.status(500).json({ error:"user khong duoc de trong" })
@@ -92,7 +93,14 @@ router.post('/getRoomById', async function (req, res, next) {
             dataroom = await room.create(newRoom)
             return res.status(200).json({ data: dataroom, image:user2.image })
         }
-        res.status(200).json({ data: data })
+        console.log("after ID", afterId)
+        let message = await messageModel.find({ roomId: data._id }).sort({ "createAt": 1 }).limit(20)
+        message = message.map(e => {
+            const isMe = e.userId===req.user.userId
+            return {message:e.message, createAt: e.createAt, image: e.image,name:e.name, isMe:isMe}
+        })
+
+        res.status(200).json({ data: data, message:message })
         
     } catch (error) {
         console.log(error)
@@ -100,21 +108,24 @@ router.post('/getRoomById', async function (req, res, next) {
     }
 });
 router.post('/newMessage', async function (req, res, next) {
-    let {roomId, message, createAt} = req.body
-    if(!roomId || !message || !createAt){
+    let {roomId, message} = req.body
+    if(!roomId || !message ){
         return res.status(300).send("Invalid data")
     }
     let newMessage = {
         userId: req.user.userId,
         roomId: roomId,
         message:message,
-        createAt: Date.now()
+        createAt: Date.now(),
+        image: req.user.image,
+        name: req.user.name
     }
-    messageModel.insertOne(newMessage, function(err, res) {
-        if (err){
+    messageModel.create(newMessage, function(err, result) {
+        if (err) {
             return res.status(300).send("Khong the them")
         }
-        else{
+        else {
+            io.emit('new-message', message)
             return res.status(200).send("success")
         }
 

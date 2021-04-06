@@ -192,6 +192,9 @@ body.dark {
     padding: 0 22px 8px 8px;
     overflow-y: auto;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 
 .room-container .you img {
@@ -218,6 +221,16 @@ body.dark {
 .you,
 .me {
     clear: both;
+}
+.you{
+    display: flex;
+    align-items: flex-end;
+}
+.your_image{
+    margin-bottom: 5px;
+}
+.you .your_message_group {
+    flex: 1;
 }
 
 .mess-container {
@@ -357,7 +370,12 @@ body.dark {
 .loading.hide{
     display: none !important;
 }
-
+.right_chat .room_name.hide{
+    display: none !important; 
+}
+.right_chat .room_name.hide+.room-container +form{
+    display: none !important;
+}
 .btn-close {
     position: absolute;
     top: 5px;

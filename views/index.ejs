@@ -83,25 +83,23 @@
 			</div>
 		</div>
 		<div class="right_chat">
-			<div class="room_name d-flex justify-content-between">
+			<div class="room_name hide d-flex justify-content-between">
 				<div class=" partner d-flex justify-content-between align-items-center">
 					<div class="partner_image me-2">
-						<img src="https://www.hebergementwebs.com/image/ec/eca71f9e3aabc2c6af43482274a8189f.jpg/la-dragonball-house-edition-forbids-sharing-manga-images-and-gif-1.jpg"
+						<img src=""
 							alt="user">
 					</div>
 					<div class="ms-1 status d-flex flex-column ">
 						<span class="partner_name">
-							Sida
 						</span>
 						<span class="partner_stutus">
-							Đang hoạt động
 						</span>
 					</div>
 				</div>
 				<p>icon j j đó</p>
 			</div>
 			<div class="room-container">
-				<div class="you  d-flex align-items-end">
+				<!-- <div class="you  d-flex align-items-end">
 					<div class="your_image">
 						<img src="https://www.hebergementwebs.com/image/ec/eca71f9e3aabc2c6af43482274a8189f.jpg/la-dragonball-house-edition-forbids-sharing-manga-images-and-gif-1.jpg"
 							alt="user">
@@ -139,35 +137,8 @@
 							asdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123d
 						</div>
 					</div>
-				</div>
-				<div class="you  d-flex align-items-end">
-					<div class="your_image">
-						<img src="https://www.hebergementwebs.com/image/ec/eca71f9e3aabc2c6af43482274a8189f.jpg/la-dragonball-house-edition-forbids-sharing-manga-images-and-gif-1.jpg"
-							alt="user">
-					</div>
-					<div class=" your_message_group">
-						<div class="mess-container your_message">
-							<div class="mess">asdasd</div>
-						</div>
-						<div class="mess-container your_message">
-							<div class="mess">asdasd</div>
-						</div>
-						<div class="mess-container your_message">
-							<div class="mess">asdasd</div>
-						</div>
-						<div class="mess-container your_message">
-							<div class="mess">
-								asdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123d
-							</div>
-						</div>
+				</div> -->
 
-					</div>
-				</div>
-				<div class="me">
-					<div class="mess-container my_message">
-						<div class="mess">asdasd</div>
-					</div>
-				</div>
 			</div>
 			<form action="" class="form_chat d-flex justify-content-between align-items-center">
 				<!-- <input type="text" class="input_chat"> -->
@@ -183,19 +154,46 @@
 <script>
 	$(document).ready(function () {
 		if ($(".chat-container")[0]) {
-			let dataTemp = []
+
+			let userOnline = [];
 			const socket = io()
 			socket.on('connect', () => {
 				console.log("Da ket noi thanh cong voi id" + socket.id)
+				// socket.emit("register-id", "<%=userId %>")
 
-				socket.emit("register-id", "<%=userId %>")
 			});
 			socket.on('disconnect', () => {
 				console.log("Mat ket noi voi server");
 			});
-			// socket.on('list-users', handleUserList);
-			socket.on("register-id", data => {
+
+			// socket.on("register-id", data => {
+			// 	console.log("register-id")
+			// 	userOnline.push(data)
+			// 	console.log(data)
+			// 	console.log(userOnline)
+			// })
+			socket.on("list-users", users => {
+				console.log("Da nhan duoc danh sach user online")
+				users.forEach(u=>{
+					if(u.id !== socket.id){
+						userOnline.push(u)
+						console.log(u)
+					}
+				})
+				console.log(userOnline)
+			})
+			socket.on("new-message", data => {
 				console.log(data)
+			})
+			socket.on("new-user", data => {
+				console.log("1 nguoi moi da tham gia")
+				userOnline.push(data)
+				console.log(userOnline)
+			})
+			socket.on("user-leave", id => {
+				userOnline =userOnline.filter(e=>e.id !== id)
+				console.log("1 nguoi moi da thoat")
+				console.log(userOnline)
 			})
 
 			$(document).click(function (event) {
@@ -229,16 +227,18 @@
 				}
 			})
 			$(document).on("click", ".user_display", async function () {
+				$(".right_chat .room_name").removeClass("hide")
 				let userId = $(this).data("userid")
 				let roomId = $(this).data("roomid")
 				console.log(userId, roomId)
+				$(".partner_image img").attr("src", $(this).children(".user__left__item__img").children().attr("src"))
 				//create message  container
-				
+				$(".room_name .partner_name").text($(this).children(".user__left__item__mess").children(".partner_name").text())
 				if($(".user_left  .room-container[data-roomid=" + roomId + "]")[0]){
 					console.log("Co roi")
 					let chatroom = $(".user_left  .room-container[data-roomid=" + roomId + "]")
 					$(".right_chat .room-container").replaceWith(chatroom.clone())
-					chatroom =await loadAndDiaplayRoomByID(userId, chatroom)
+
 				}else{
 					console.log("chua co")
 					let newchatroom ;
@@ -249,8 +249,13 @@
 					newchatroom = $(newchatroom)
 					$(".user_left").append(`<div class="room-container" data-userid=${userId} data-roomid=${roomId}></div>`)
 					$(".right_chat .room-container").replaceWith(newchatroom)
-					let a  =await loadAndDiaplayRoomByID(userId, newchatroom)
+					let data  =await loadRoomByID(userId)
+					let mess = data.message
+					displayChat(mess)
+
 				}
+				
+
 
 				
 
@@ -267,19 +272,54 @@
 				}
 				
 			});
-			$(".form_chat ").submit(e=>{
+			$(".form_chat ").submit(async e=>{
 				e.preventDefault()
 				let message = $(".input_chat").text()
 
 				$(".input_chat").text("")
-				if($(".room-container").children().last().hasClass("me")){
-					$(".me").last().append(`<div class="mess-container my_message">
-										<div class="mess">${message}</div>
+				if($(".right_chat .room-container").children().last().hasClass("me")){
+					let roomId = $(".right_chat .room-container").data("roomid")
+					let chatroom = $(".room-container[data-roomid=" + roomId + "]")
+					chatroom.children(".me").append(`<div class="mess-container my_message">
+												<div class="mess">${message}</div>
+											</div>`)
+				}else{
+
+					let roomId = $(".right_chat .room-container").data("roomid")
+					let chatroom = $(".room-container[data-roomid=" + roomId + "]")
+
+					chatroom.append(`<div class="me">
+										<div class="mess-container my_message">
+											<div class="mess">${message}</div>
+										</div>
 									</div>`)
+
 				}
-				$(".room-container").animate({
-					scrollTop: $(".room-container").height()
+				$(".right_chat .room-container").animate({
+					scrollTop: $(".right_chat .room-container").height()
 				}, 0);
+
+				const response = await fetch("/api/newMessage", {
+					method: 'POST',
+					credentials: 'same-origin', // include, *same-origin, omit
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body:JSON.stringify({
+						message: message,
+						roomId: $(".right_chat .room-container").data("roomid"),
+
+					})
+
+				});
+				// if(response.status === 200){
+				// 	socket.emit("new-message", {
+				// 		content
+				// 	});
+					
+				// }
+			
+
 				
 			})
 		}
