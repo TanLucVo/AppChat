@@ -194,7 +194,18 @@ body.dark {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: end;
+    position: relative;
+}
+.loading-chat{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+.room-container> :first-child {
+    margin-top: auto !important;
+    /* use !important to prevent breakage from child margin settings */
 }
 
 .room-container .you img {

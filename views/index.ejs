@@ -99,6 +99,7 @@
 				<p>icon j j đó</p>
 			</div>
 			<div class="room-container">
+
 				<!-- <div class="you  d-flex align-items-end">
 					<div class="your_image">
 						<img src="https://www.hebergementwebs.com/image/ec/eca71f9e3aabc2c6af43482274a8189f.jpg/la-dragonball-house-edition-forbids-sharing-manga-images-and-gif-1.jpg"
@@ -154,24 +155,41 @@
 <script>
 	$(document).ready(function () {
 		if ($(".chat-container")[0]) {
+			
+			async function handleScrollLoadChat(){
+				if($(".right_chat .room-container").scrollTop() === 0){
+					console.log("Load more mess")
+					let time =$(".right_chat .room-container .mess-container").first().data("time")
+					let userId = $(".right_chat .room-container").data("userid")
+					console.log(time)
 
+					let moredata =await loadRoomByID(userId, time)
+					// moredata = moredata.message.reverse()
+					// console.log(moredata)
+					// loadmorechat(moredata)
+				}
+
+			}
+			
 			let userOnline = [];
 			const socket = io()
 			socket.on('connect', () => {
 				console.log("Da ket noi thanh cong voi id" + socket.id)
-				// socket.emit("register-id", "<%=userId %>")
+				socket.emit("register-id", "<%=userId %>")
 
 			});
 			socket.on('disconnect', () => {
 				console.log("Mat ket noi voi server");
 			});
 
-			// socket.on("register-id", data => {
-			// 	console.log("register-id")
-			// 	userOnline.push(data)
-			// 	console.log(data)
-			// 	console.log(userOnline)
-			// })
+			socket.on("register-id", data => {
+				let {id, userId} = data;
+				let user = userOnline.find(u => u.id==id)
+				if(!user) return console.log("Khong tim thay user")
+				user.userId = userId
+				console.log(`client ${id} da dang ki userId ${userId}`)
+			})
+
 			socket.on("list-users", users => {
 				console.log("Da nhan duoc danh sach user online")
 				users.forEach(u=>{
@@ -183,7 +201,9 @@
 				console.log(userOnline)
 			})
 			socket.on("new-message", data => {
-				console.log(data)
+				console.log("Newmeessage")
+				addChatPartner(data)
+				$(".right_chat .room-container").animate({scrollTop: $(".right_chat .room-container").prop("scrollHeight")},0);
 			})
 			socket.on("new-user", data => {
 				console.log("1 nguoi moi da tham gia")
@@ -231,6 +251,7 @@
 				let userId = $(this).data("userid")
 				let roomId = $(this).data("roomid")
 				console.log(userId, roomId)
+
 				$(".partner_image img").attr("src", $(this).children(".user__left__item__img").children().attr("src"))
 				//create message  container
 				$(".room_name .partner_name").text($(this).children(".user__left__item__mess").children(".partner_name").text())
@@ -238,6 +259,7 @@
 					console.log("Co roi")
 					let chatroom = $(".user_left  .room-container[data-roomid=" + roomId + "]")
 					$(".right_chat .room-container").replaceWith(chatroom.clone())
+					$(".right_chat .room-container").scroll(handleScrollLoadChat)
 
 				}else{
 					console.log("chua co")
@@ -249,13 +271,21 @@
 					newchatroom = $(newchatroom)
 					$(".user_left").append(`<div class="room-container" data-userid=${userId} data-roomid=${roomId}></div>`)
 					$(".right_chat .room-container").replaceWith(newchatroom)
-					let data  =await loadRoomByID(userId)
-					let mess = data.message
+					$(".right_chat .room-container").append(`<div class="loading-chat hide d-flex justify-content-center hide">
+							<div class="spinner-border text-primary" role="status">
+								<span class="visually-hidden">Loading...</span>
+							</div>
+						</div>`)
+					let data  =await loadRoomByID(userId, null)
+					let mess = data.message.reverse()
+					$(".right_chat .room-container").children('.loading-chat').remove()
+					
 					displayChat(mess)
-
+					$(".right_chat .room-container").scroll(handleScrollLoadChat)
 				}
+				// $(".room-container").scroll(handleScrollLoadChat)
 				
-
+				$(".right_chat .room-container").animate({scrollTop: $(".right_chat .room-container").prop("scrollHeight")},0);
 
 				
 
@@ -267,15 +297,19 @@
 			loadAndDiaplayRoom()
 			$('.input_chat').on('keydown', function (e) {
 				if (e.keyCode === 13 && e.shiftKey === false) {
-					$(".form_chat").submit();
+					if($(".input_chat").text().trim() !== "" ){
+						$(".form_chat").submit();
+					}
 					return false
 				}
 				
 			});
 			$(".form_chat ").submit(async e=>{
 				e.preventDefault()
-				let message = $(".input_chat").text()
-
+				let message = $(".input_chat").text().trim()
+				if (message.trim() === "") {
+						return 
+				}
 				$(".input_chat").text("")
 				if($(".right_chat .room-container").children().last().hasClass("me")){
 					let roomId = $(".right_chat .room-container").data("roomid")
@@ -295,9 +329,7 @@
 									</div>`)
 
 				}
-				$(".right_chat .room-container").animate({
-					scrollTop: $(".right_chat .room-container").height()
-				}, 0);
+				$(".right_chat .room-container").animate({scrollTop: $(".right_chat .room-container").prop("scrollHeight")},0);
 
 				const response = await fetch("/api/newMessage", {
 					method: 'POST',
@@ -312,12 +344,11 @@
 					})
 
 				});
-				// if(response.status === 200){
-				// 	socket.emit("new-message", {
-				// 		content
-				// 	});
-					
-				// }
+				let data_mess = await response.json()
+				if(response.status === 200){
+
+					socket.emit('send-room',data_mess);
+				}
 			
 
 				

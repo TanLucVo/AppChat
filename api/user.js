@@ -52,7 +52,7 @@ router.post('/getRoom', async function (req, res, next) {
 });
 
 router.post('/getRoomById', async function (req, res, next) {
-    let {id2, afterId} = req.body;
+    let {id2, time} = req.body;
     let user1 = req.user
     if (!id2) {
         return res.status(500).json({ error:"user khong duoc de trong" })
@@ -93,8 +93,13 @@ router.post('/getRoomById', async function (req, res, next) {
             dataroom = await room.create(newRoom)
             return res.status(200).json({ data: dataroom, image:user2.image })
         }
-        console.log("after ID", afterId)
-        let message = await messageModel.find({ roomId: data._id }).sort({ "createAt": 1 }).limit(20)
+        let message
+        if (time != null && time) {
+            message = await messageModel.find({ roomId: data._id, createAt: { $gt: time }}).sort({ "createAt": -1 }).limit(20)
+        } else {
+            message = await messageModel.find({ roomId: data._id }).sort({ "createAt": -1 }).limit(20)
+        }
+        
         message = message.map(e => {
             const isMe = e.userId===req.user.userId
             return {message:e.message, createAt: e.createAt, image: e.image,name:e.name, isMe:isMe}
@@ -112,11 +117,16 @@ router.post('/newMessage', async function (req, res, next) {
     if(!roomId || !message ){
         return res.status(300).send("Invalid data")
     }
+    message = message.trim()
+    if (message === "") {
+        return res.status(300).send("Empty message")
+    }
+    let createAt = Date.now()
     let newMessage = {
         userId: req.user.userId,
         roomId: roomId,
         message:message,
-        createAt: Date.now(),
+        createAt: createAt,
         image: req.user.image,
         name: req.user.name
     }
@@ -125,8 +135,7 @@ router.post('/newMessage', async function (req, res, next) {
             return res.status(300).send("Khong the them")
         }
         else {
-            io.emit('new-message', message)
-            return res.status(200).send("success")
+            return res.status(200).json( { roomId: roomId, message: message, createAt:createAt, image: req.user.image})
         }
 
     });

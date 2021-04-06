@@ -33,7 +33,7 @@ async function loadAndDiaplayRoom() {
     }
 
 }
-async function loadRoomByID(id) {
+async function loadRoomByID(id, time) {
     //loadmessage
 
     const response = await fetch("/api/getRoomById", {
@@ -44,6 +44,7 @@ async function loadRoomByID(id) {
         },
         body: JSON.stringify({
             id2: id,
+            time: time
         })
     });
     let data = await response.json()
@@ -115,7 +116,7 @@ function displayChat(mess) {
             if ($(".right_chat .room-container").children().last().hasClass("me")) {
                 let roomId = $(".right_chat .room-container").data("roomid")
                 let chatroom = $(".room-container[data-roomid=" + roomId + "]")
-                chatroom.children(".me").append(`<div class="mess-container my_message">
+                chatroom.children(".me").append(`<div class="mess-container my_message"  data-time=${i.createAt}>
 															<div class="mess">${i.message}</div>
 														</div>`)
             } else {
@@ -124,7 +125,7 @@ function displayChat(mess) {
                 let chatroom = $(".room-container[data-roomid=" + roomId + "]")
 
                 chatroom.append(`<div class="me">
-													<div class="mess-container my_message">
+													<div class="mess-container my_message"  data-time=${i.createAt}>
 														<div class="mess">${i.message}</div>
 													</div>
 												</div>`)
@@ -135,7 +136,7 @@ function displayChat(mess) {
                 let roomId = $(".right_chat .room-container").data("roomid")
                 let chatroom = $(".room-container[data-roomid=" + roomId + "]")
 
-                chatroom.children(".you").children(".your_message_group").append(`<div class="mess-container your_message">
+                chatroom.children(".you").children(".your_message_group").append(`<div class="mess-container your_message"  data-time=${i.createAt}>
 																		<div class="mess">${i.message}</div>
 																	</div>`)
             } else {
@@ -148,7 +149,94 @@ function displayChat(mess) {
 															alt="user">
 													</div>
 													<div class=" your_message_group">
-														<div class="mess-container your_message">
+														<div class="mess-container your_message"  data-time=${i.createAt}>
+															<div class="mess">${i.message}</div>
+														</div>
+													</div>
+												</div>`)
+
+
+            }
+
+        }
+
+    }
+}
+
+function addChatPartner(data) {
+    let {roomId,message,createAt,image} = data
+    if (!$(".room-container[data-roomid=" + roomId + "]")[0]) {
+        console.log("Khoi load")
+    } else {
+        if ($(".right_chat .room-container").children().last().hasClass("you")) {
+            let roomId = $(".right_chat .room-container").data("roomid")
+            let chatroom = $(".room-container[data-roomid=" + roomId + "]")
+
+            chatroom.children(".you").children(".your_message_group").append(`<div class="mess-container your_message"  data-time=${createAt}>
+																		<div class="mess">${message}</div>
+																	</div>`)
+        } else {
+            let roomId = $(".right_chat .room-container").data("roomid")
+            let chatroom = $(".room-container[data-roomid=" + roomId + "]")
+
+            chatroom.append(`<div class="you">
+													<div class="your_image">
+														<img src=${image}
+															alt="user">
+													</div>
+													<div class=" your_message_group">
+														<div class="mess-container your_message"  data-time=${createAt}>
+															<div class="mess">${message}</div>
+														</div>
+													</div>
+												</div>`)
+
+
+        }
+    }
+
+
+}
+function loadmorechat(mess) {
+    for (let i of mess) {
+        if (i.isMe) {
+            if ($(".right_chat .room-container").children().last().hasClass("me")) {
+                let roomId = $(".right_chat .room-container").data("roomid")
+                let chatroom = $(".room-container[data-roomid=" + roomId + "]")
+                chatroom.children(".me").prepend(`<div class="mess-container my_message"  data-time=${i.createAt}>
+															<div class="mess">${i.message}</div>
+														</div>`)
+            } else {
+
+                let roomId = $(".right_chat .room-container").data("roomid")
+                let chatroom = $(".room-container[data-roomid=" + roomId + "]")
+
+                chatroom.prepend(`<div class="me">
+													<div class="mess-container my_message"  data-time=${i.createAt}>
+														<div class="mess">${i.message}</div>
+													</div>
+												</div>`)
+
+            }
+        } else {
+            if ($(".right_chat .room-container").children().last().hasClass("you")) {
+                let roomId = $(".right_chat .room-container").data("roomid")
+                let chatroom = $(".room-container[data-roomid=" + roomId + "]")
+
+                chatroom.children(".you").children(".your_message_group").prepend(`<div class="mess-container your_message"  data-time=${i.createAt}>
+																		<div class="mess">${i.message}</div>
+																	</div>`)
+            } else {
+                let roomId = $(".right_chat .room-container").data("roomid")
+                let chatroom = $(".room-container[data-roomid=" + roomId + "]")
+
+                chatroom.prepend(`<div class="you">
+													<div class="your_image">
+														<img src=${i.image}
+															alt="user">
+													</div>
+													<div class=" your_message_group">
+														<div class="mess-container your_message"  data-time=${i.createAt}>
 															<div class="mess">${i.message}</div>
 														</div>
 													</div>
