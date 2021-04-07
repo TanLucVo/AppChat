@@ -353,6 +353,7 @@ body.dark {
     left: 0;
     height: auto;
     max-height: 600px;
+    z-index: 999999;
 }
 
 #collapseSearch .card {
