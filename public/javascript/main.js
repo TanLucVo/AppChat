@@ -139,6 +139,8 @@ function delay(ms) {
 }
 
 function displayChat(mess) {
+
+	$(".right_chat .room-container ").css("max-height",$(".right_chat").outerHeight()- $(".room_name ").outerHeight()-$(".form_chat ").outerHeight())
     let roomId;
     for (let i of mess) {
         if (i.isMe) {
