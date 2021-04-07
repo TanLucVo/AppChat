@@ -95,7 +95,7 @@ router.post('/getRoomById', async function (req, res, next) {
         }
         let message
         if (time != null && time) {
-            message = await messageModel.find({ roomId: data._id, createAt: { $gt: time }}).sort({ "createAt": -1 }).limit(20)
+            message = await messageModel.find({ roomId: data._id, createAt: { $lt: time }}).sort({ "createAt": -1 }).limit(20)
         } else {
             message = await messageModel.find({ roomId: data._id }).sort({ "createAt": -1 }).limit(20)
         }
