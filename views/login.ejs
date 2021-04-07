@@ -17,18 +17,16 @@
 </head>
 
 <body class="login-page">
-    <div class="content">
+
+    <div class="content d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    <img src="/images/Login_image.svg" alt="Image" class="img-fluid">
-                </div>
-                <div class="col-md-6 contents">
+                <div class="col-md-12 ">
                     <div class="social-login">
                         <div class="col-md-12 mb-3">
                             <p class="text-center">
-                                <a href="/auth/google" class="google btn mybtn"><i class="fa fa-2x fa-google-plus">
-                                    </i> Signup using Google
+                                <a style="font-size: 30px; font-weight: 500;" href="/auth/google" class="google btn mybtn"><img src="/image/icons8-google.svg" alt="">
+                                     Signup using Google
                                 </a>
                             </p>
                         </div>
@@ -37,30 +35,6 @@
             </div>
         </div>
     </div>
-    <script>
-        $(document).ready(function(){
-            //login function
-            $("#login_form").submit(e=>{
-                e.preventDefault()
-                const [username, password, remember_me] = $("#login_form").serializeArray();
-                $("#login_form .spinner-border").fadeIn()
-                $.post( "/auth",{username: username.value, password:password.value, remember_me:remember_me.value}, function( data ) {
-                    if(!data.error){
-                        location.reload();
-                    }else{
-                        $("#login_form .spinner-border").fadeOut("fast")
-                        $("#login_form .login-content-error").text(data.error)
-                        $("#login_form .show-error-login").fadeIn("slow");
-
-                    }
-                });
-            })
-            $("#login_form input").keypress(function(){
-                $("#login_form .show-error-login").fadeOut("slow");
-            })
-
-        })
-    </script>
 </body>
 
 </html>

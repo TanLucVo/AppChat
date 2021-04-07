@@ -21,24 +21,26 @@
 		integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous">
 	</script>
 	<script src="/javascript/main.js"></script>
+
 </head>
 
 <body class="dark">
+
 	<header class="header d-flex justify-content-between">
 		<div class="left d-flex justify-content-between align-items-center">
 			<h3 class="mb-0 logo">App chat</h3>
 		</div>
-
-		<div class="user d-flex justify-content-between align-items-center">
+                   
+		<div class="user d-flex justify-content-between align-items-center" tabindex="0"  data-bs-trigger="focus" data-bs-toggle="popover" data-bs-placement="bottom">
 			<div class="user__image">
-				<img src="https://www.hebergementwebs.com/image/ec/eca71f9e3aabc2c6af43482274a8189f.jpg/la-dragonball-house-edition-forbids-sharing-manga-images-and-gif-1.jpg"
+				<img src="<%= user.image%>"
 					alt="">
 			</div>
-			<span class="user__name">Tấn Lực</span>
+			<span class="user__name"><%= user.name%></span>
 		</div>
 	</header>
 	<div class="chat-container d-flex justify-content-between">
-		<div class="left_chat">
+		<div class="left_chat ">
 			<div class="search">
 				<input type="text" id="search-input" class="input_search_user">
 				<span><i class="fas fa-search"></i></span>
@@ -82,7 +84,7 @@
 
 			</div>
 		</div>
-		<div class="right_chat">
+		<div class="right_chat ">
 			<div class="room_name hide d-flex justify-content-between">
 				<div class=" partner d-flex justify-content-between align-items-center">
 					<div class="partner_image me-2">
@@ -96,49 +98,8 @@
 						</span>
 					</div>
 				</div>
-				<p>icon j j đó</p>
 			</div>
 			<div class="room-container">
-
-				<!-- <div class="you  d-flex align-items-end">
-					<div class="your_image">
-						<img src="https://www.hebergementwebs.com/image/ec/eca71f9e3aabc2c6af43482274a8189f.jpg/la-dragonball-house-edition-forbids-sharing-manga-images-and-gif-1.jpg"
-							alt="user">
-					</div>
-					<div class=" your_message_group">
-						<div class="mess-container your_message">
-							<div class="mess">asdasd</div>
-						</div>
-						<div class="mess-container your_message">
-							<div class="mess">asdasd</div>
-						</div>
-						<div class="mess-container your_message">
-							<div class="mess">asdasd</div>
-						</div>
-						<div class="mess-container your_message">
-							<div class="mess">
-								asdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123d
-							</div>
-						</div>
-
-					</div>
-				</div>
-				<div class="me">
-					<div class="mess-container my_message">
-						<div class="mess">asdasd</div>
-					</div>
-					<div class="mess-container my_message">
-						<div class="mess">asdasd</div>
-					</div>
-					<div class="mess-container my_message">
-						<div class="mess">asdasd</div>
-					</div>
-					<div class="mess-container my_message">
-						<div class="mess">
-							asdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123dasdasasdsadsadaad1231231233123d
-						</div>
-					</div>
-				</div> -->
 
 			</div>
 			<form action="" class="form_chat d-flex justify-content-between align-items-center">
@@ -152,302 +113,6 @@
 	</div>
 </body>
 
-<script>
-	function loadmorechat(mess) {
-		for (let i of mess) {
-			if (i.isMe) {
-				if ($(".right_chat .room-container").children().first().hasClass("me")) {
-					let roomId = $(".right_chat .room-container").data("roomid")
-					let chatroom = $(".room-container[data-roomid=" + roomId + "]")
-					chatroom.children(".me").prepend(`<div class="mess-container my_message"  data-time=${i.createAt}>
-																<div class="mess">${i.message}</div>
-															</div>`)
-				} else {
 
-					let roomId = $(".right_chat .room-container").data("roomid")
-					let chatroom = $(".room-container[data-roomid=" + roomId + "]")
-
-					chatroom.prepend(`<div class="me">
-														<div class="mess-container my_message"  data-time=${i.createAt}>
-															<div class="mess">${i.message}</div>
-														</div>
-													</div>`)
-
-				}
-			} else {
-				if ($(".right_chat .room-container").children().first().hasClass("you")) {
-
-					let roomId = $(".right_chat .room-container").data("roomid")
-					let chatroom = $(".room-container[data-roomid=" + roomId + "]")
-
-					chatroom.children(".you").children(".your_message_group").prepend(`<div class="mess-container your_message"  data-time=${i.createAt}>
-																			<div class="mess">${i.message}</div>
-																		</div>`)
-				} else {
-					let roomId = $(".right_chat .room-container").data("roomid")
-					let chatroom = $(".room-container[data-roomid=" + roomId + "]")
-
-					chatroom.prepend(`<div class="you">
-														<div class="your_image">
-															<img src=${i.image}
-																alt="user">
-														</div>
-														<div class=" your_message_group">
-															<div class="mess-container your_message"  data-time=${i.createAt}>
-																<div class="mess">${i.message}</div>
-															</div>
-														</div>
-													</div>`)
-
-
-				}
-
-			}
-
-		}
-	}
-
-	$(document).ready(function () {
-		if ($(".chat-container")[0]) {
-			
-			async function handleScrollLoadChat(){
-				if($(".right_chat .room-container").scrollTop() === 0){
-					let oldChild = $(".right_chat .room-container").children().first().children(".mess-container").first()
-
-					$(".right_chat .room-container").prepend(`<div class="loading-more-chat pt-2 pb-2 hide d-flex justify-content-center hide">
-							<div class="spinner-border text-primary" role="status">
-								<span class="visually-hidden">Loading...</span>
-							</div>
-						</div>`)
-					let heightLoading = $(".right_chat .room-container .loading-more-chat ").height()
-					let time =$(".right_chat .room-container .mess-container").first().data("time")
-					let userId = $(".right_chat .room-container").data("userid")
-					try {
-						let moredata =await loadRoomByID(userId, time)
-						moredata = moredata.message
-						$(".right_chat .room-container .loading-more-chat").remove()
-						loadmorechat(moredata)
-
-
-						if(moredata.length !=0){
-							oldChild[0].scrollIntoView()
-
-						}
-
-
-					} catch (error) {
-						$(".right_chat .room-container .loading-more-chat").remove()
-					}
-					
-				}
-
-			}
-			
-			let userOnline = [];
-			const socket = io()
-			socket.on('connect', () => {
-				console.log("Da ket noi thanh cong voi id" + socket.id)
-				socket.emit("register-id", "<%=userId %>")
-
-			});
-			socket.on('disconnect', () => {
-				console.log("Mat ket noi voi server");
-			});
-
-			socket.on("register-id", data => {
-				let {id, userId} = data;
-				let user = userOnline.find(u => u.id==id)
-				if(!user) return console.log("Khong tim thay user")
-				user.userId = userId
-				console.log(`client ${id} da dang ki userId ${userId}`)
-			})
-
-			socket.on("list-users", users => {
-				console.log("Da nhan duoc danh sach user online")
-				users.forEach(u=>{
-					if(u.id !== socket.id){
-						userOnline.push(u)
-						console.log(u)
-					}
-				})
-				console.log(userOnline)
-			})
-			socket.on("new-message", data => {
-				console.log("Newmeessage")
-				addChatPartner(data)
-				$(".right_chat .room-container").animate({scrollTop: $(".right_chat .room-container").prop("scrollHeight")},0);
-			})
-			socket.on("new-user", data => {
-				console.log("1 nguoi moi da tham gia")
-				userOnline.push(data)
-				console.log(userOnline)
-			})
-			socket.on("user-leave", id => {
-				userOnline =userOnline.filter(e=>e.id !== id)
-				console.log("1 nguoi moi da thoat")
-				console.log(userOnline)
-			})
-
-			$(document).click(function (event) {
-				var clickover = $(event.target);
-				var _opened = $("#collapseSearch").hasClass("show");
-				if (_opened === true && !clickover.hasClass("collapseSearchCard") && !clickover.hasClass(
-						"input_search_user")) {
-					console.log("Hide")
-					$("#collapseSearch").removeClass("show")
-				}
-			});
-			var typingTimer; //timer identifier
-			var doneTypingInterval = 800; //time in ms, 5 second for example
-
-			$("#search-input").on("click focus", (function () {
-				if ($("#search-input").val().trim() === "") return
-				$("#collapseSearch").collapse("show")
-			}))
-
-			$("#search-input").on('keydown', function () {
-				clearTimeout(typingTimer);
-			});
-			$("#search-input").keypress(async (event) => {
-				typingTimer = setTimeout(loadAndDisplayUser, doneTypingInterval);
-			})
-			$("#search-input").keyup(async (event) => {
-
-				if (event.which === 8 || event.which == 46) {
-					typingTimer = setTimeout(loadAndDisplayUser, doneTypingInterval);
-
-				}
-			})
-			$(document).on("click", ".user_display", async function () {
-				$(".right_chat .room_name").removeClass("hide")
-				let userId = $(this).data("userid")
-				let roomId = $(this).data("roomid")
-				console.log(userId, roomId)
-				if(!roomId){
-					console.log("Load cai room Id")
-					$(".partner_image img").attr("src", $(this).children(".user_search__img").children("img").attr("src"))
-					//create message  container
-					$(".room_name .partner_name").text($(this).children(".user_search__name").children("p").text())
-					
-					let test = await loadRoomByID(userId, null)
-					roomId = test.data._id
-					$(this).data("roomid", "asdasdasdasdasd")
-					console.log($(this))
-
-
-
-					
-				}else{
-					$(".partner_image img").attr("src", $(this).children(".user__left__item__img").children().attr("src"))
-					//create message  container
-					$(".room_name .partner_name").text($(this).children(".user__left__item__mess").children(".partner_name").text())
-				}
-				
-				if($(".user_left  .room-container[data-roomid=" + roomId + "]")[0]){
-					console.log("Co roi")
-					let chatroom = $(".user_left  .room-container[data-roomid=" + roomId + "]")
-					$(".right_chat .room-container").replaceWith(chatroom.clone())
-					$(".right_chat .room-container").scroll(handleScrollLoadChat)
-
-				}else{
-					console.log("chua co")
-					let newchatroom ;
-					newchatroom = document.createElement('div');
-					newchatroom.classList.add("room-container")
-					newchatroom.dataset.userid = userId
-					newchatroom.dataset.roomid = roomId
-					newchatroom = $(newchatroom)
-					$(".user_left").append(`<div class="room-container" data-userid=${userId} data-roomid=${roomId}></div>`)
-					$(".right_chat .room-container").replaceWith(newchatroom)
-					$(".right_chat .room-container").append(`<div class="loading-chat hide d-flex justify-content-center hide">
-							<div class="spinner-border text-primary" role="status">
-								<span class="visually-hidden">Loading...</span>
-							</div>
-						</div>`)
-					let data  =await loadRoomByID(userId, null)
-					let mess = data.message.reverse()
-						console.log(mess);
-					$(".right_chat .room-container").children('.loading-chat').remove()
-					
-					displayChat(mess)
-					$(".right_chat .room-container").scroll(handleScrollLoadChat)
-				}
-				// $(".room-container").scroll(handleScrollLoadChat)
-				
-				$(".right_chat .room-container").animate({scrollTop: $(".right_chat .room-container").prop("scrollHeight")},0);
-
-				
-
-
-				// $(".user_left").append(chatroom)
-
-				
-			});
-			loadAndDiaplayRoom()
-			$('.input_chat').on('keydown', function (e) {
-				if (e.keyCode === 13 && e.shiftKey === false) {
-					if($(".input_chat").text().trim() !== "" ){
-						$(".form_chat").submit();
-					}
-					return false
-				}
-				
-			});
-			$(".form_chat ").submit(async e=>{
-				e.preventDefault()
-				let message = $(".input_chat").text().trim()
-				if (message.trim() === "") {
-						return 
-				}
-				$(".input_chat").text("")
-				if($(".right_chat .room-container").children().last().hasClass("me")){
-					let roomId = $(".right_chat .room-container").data("roomid")
-					let chatroom = $(".room-container[data-roomid=" + roomId + "]")
-					chatroom.children(".me").append(`<div class="mess-container my_message">
-												<div class="mess">${message}</div>
-											</div>`)
-				}else{
-
-					let roomId = $(".right_chat .room-container").data("roomid")
-					let chatroom = $(".room-container[data-roomid=" + roomId + "]")
-
-					chatroom.append(`<div class="me">
-										<div class="mess-container my_message">
-											<div class="mess">${message}</div>
-										</div>
-									</div>`)
-
-				}
-				$(".right_chat .room-container").animate({scrollTop: $(".right_chat .room-container").prop("scrollHeight")},0);
-
-				const response = await fetch("/api/newMessage", {
-					method: 'POST',
-					credentials: 'same-origin', // include, *same-origin, omit
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body:JSON.stringify({
-						message: message,
-						roomId: $(".right_chat .room-container").data("roomid"),
-
-					})
-
-				});
-				let data_mess = await response.json()
-				if(response.status === 200){
-
-					socket.emit('send-room',data_mess);
-				}
-			
-
-				
-			})
-		}
-
-	})
-
-
-	
-</script>
 
 </html>

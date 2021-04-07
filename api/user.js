@@ -141,5 +141,21 @@ router.post('/newMessage', async function (req, res, next) {
     });
 });
 
+router.post('/lastMessage', async function (req, res, next) {
+    let {roomId} = req.body
+    roomId = roomId.trim()
+    if(!roomId){
+        return res.status(300).send("Invalid data")
+    }
+    if(roomId==="") return res.status(300).send("Invalid data")
+
+    try {
+        let data = await messageModel.find({roomId:roomId}).sort({createAt:-1}).limit(1)
+        return res.status(200).json({data:data})
+    } catch (error) {
+        
+    }
+});
+
 
 module.exports = router;

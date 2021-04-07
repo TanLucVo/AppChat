@@ -25,14 +25,17 @@ io.on("connection", function (client) {
     client.on("send-room", async (data) => {
         let { roomId, message, createAt, image } = data
         let usersId =await roomModel.findOne({ _id: roomId })
+        let sendByName = usersId.users.filter(e => e.id == client.userId);
+
         usersId = usersId.users.map(e => parseInt(e.id))
+        sendByName = sendByName[0].name
         let allSocket = Array.from(io.sockets.sockets.values())
         for (let i of allSocket) {
             if (usersId.includes(i.userId)) {
                 i.join(roomId);
             }
         }
-        client.to(roomId).emit('new-message', data);
+        client.to(roomId).emit('new-message',{data, sendById: client.userId, name:sendByName});
     })
     client.emit('list-users', users)
 
