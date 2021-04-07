@@ -309,6 +309,9 @@ function loadmorechat(mess) {
 	}
 
 	$(document).ready(function () {
+		$(".send-message").click(()=>{
+			$(".form_chat").submit()
+		})
         $("#login_form").submit(e=>{
             e.preventDefault()
             const [username, password, remember_me] = $("#login_form").serializeArray();
