@@ -1,5 +1,8 @@
 * {
     box-sizing: border-box;
+    transition: background-color 30ms ease-in,
+    color 30ms ease-in;
+
 }
 
 body {
@@ -10,18 +13,17 @@ body {
     overflow-y: hidden;
     min-width: 300px;
     --primary-color: #222;
-    --primary-bg-color: #e8edec;
+    --primary-bg-color: #fff;
     --main-txt-color: #222;
     --main-bg-color: #fff;
     --active-txt-color: #fff;
-    --background-input: #fff;
-    --line-break: #393a3b;
+    --background-input: #F0F2F5;
+    --line-break: rgba(0, 0, 0, .1);
     --secondary-text: #65676B;
     --shadow-2: rgba(0, 0, 0, .2);
-    --shadow-style: 0 1px 3px rgba(0, 0, 0, 0.12),
-        0 1px 2px rgba(0, 0, 0, 0.24);
+    --shadow-style:  0 0 4px rgba(0,0,0,.2);
     --bg-active-left-chat: rgba(45, 136, 255, .1);
-    --bg-message: #3E4042;
+    --bg-message: #E4E6EB;
 
     margin: 0;
     font: normal normal normal 1rem/1.6 Nunito Sans,
@@ -45,7 +47,9 @@ body.dark {
     --bg-active-left-chat: rgba(45, 136, 255, .1);
     --bg-message: #3E4042;
 }
-
+.my_message .mess{
+    color: #fff;
+}
 .left {
     max-width: 70%;
 }
@@ -54,6 +58,7 @@ body.dark {
     height: 56px;
     padding: 8px 15px;
     border-bottom: 1px solid var(--line-break);
+    box-shadow: 0 0 4px var(--shadow-2);
 }
 
 .logo {
@@ -139,7 +144,7 @@ body.dark {
 
 .room_name {
     padding: 14px;
-    box-shadow: 0 0 4px var(--shadow-2);
+    box-shadow: 0px 3px 4px -4px var(--shadow-2);
 }
 
 .partner_stutus {
