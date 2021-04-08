@@ -30,11 +30,11 @@ async function loadAndDiaplayRoom() {
         
                 });
                 let data_mess=await response1.json()
-                lastMessage = data_mess.data[0].message
+				lastMessage = data_mess.data[0].message
                 if(cookie == data_mess.data[0].userId){
                     name="Bạn"
                 }else{
-                    name = data_mess.data[0].userId
+                    name = data_mess.data[0].name
                 }
             } catch (error) {
                 console.log(error)

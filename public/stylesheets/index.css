@@ -3,6 +3,7 @@
 }
 
 body {
+    height: -webkit-fill-available;
     display: flex;
     flex-direction: column;
     min-height: 100%;
@@ -425,7 +426,8 @@ body.dark {
 
 @media only screen and (max-width: 600px) {
     body{
-        height: 100vh;
+        height:  100vh;
+        max-height: -webkit-fill-available;
     }
     .chat-container{
         flex-direction: column;
@@ -469,7 +471,17 @@ body.dark {
     .chat-container .user__left__item__img img{
         margin-right: 0;
     }
-
+    .form_chat{
+        padding: 5px 8px;
+    }   
+    .input_container{
+        margin: 0;
+        padding-right: 12%;
+    }
+    .send-message{
+        position: absolute;
+        right: 5%;
+    }
 
 
 }
