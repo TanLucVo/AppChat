@@ -84,6 +84,7 @@ body.dark {
 
 }
 
+
 .search span {
     position: absolute;
     left: 20px;
@@ -425,6 +426,7 @@ body.dark {
 }
 
 @media only screen and (max-width: 600px) {
+   
     body{
         height:  100vh;
         max-height: -webkit-fill-available;
@@ -473,6 +475,7 @@ body.dark {
     }
     .form_chat{
         padding: 5px 8px;
+        position: relative;
     }   
     .input_container{
         margin: 0;
