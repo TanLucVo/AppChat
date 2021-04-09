@@ -42,7 +42,7 @@ async function loadAndDiaplayRoom() {
 				console.log(error)
 				lastMessage = ""
 			}
-
+			if(lastMessage ==="") continue
 			string += `<div class="user__left__item user_display d-flex align-items-center" data-userid=${i.userId} data-roomid = ${i.roomId}>
                                         <div class="user__left__item__img">
                                             <img src="${i.image}"

@@ -10,6 +10,11 @@ const RoomSchema = mongoose.Schema({
 		type: Array,
 		required: true,
     },
+    updateAt: {
+		type: Number,
+		required: true,
+    },
+
 
 })
 

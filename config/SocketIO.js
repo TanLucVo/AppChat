@@ -29,6 +29,7 @@ io.on("connection", function (client) {
 
         usersId = usersId.users.map(e => parseInt(e.id))
         sendByName = sendByName[0].name
+
         let allSocket = Array.from(io.sockets.sockets.values())
         for (let i of allSocket) {
             if (usersId.includes(i.userId)) {

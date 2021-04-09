@@ -41,7 +41,7 @@ router.post('/getRoom', async function (req, res, next) {
     }
     try {
 
-        let data = await room.find({"users.id": id})
+        let data = await room.find({"users.id": id}).sort({updateAt: -1})
         let filterData =await getAllfilter(data)
         res.status(200).json({ data: filterData  })
         
@@ -72,7 +72,7 @@ router.post('/getRoomById', async function (req, res, next) {
             $or: [
                 { $and: [{ "users.0.id": user1.userId }, { "users.1.id": user2.userId }] },
                 { $and: [{ "users.0.id": user2.userId }, { "users.1.id": user1.userId }] }
-            ]
+            ],
             
         })
 
@@ -89,6 +89,7 @@ router.post('/getRoomById', async function (req, res, next) {
                         "name":user2.name
                     }
                 ],
+                updateAt:Date.now()
             }
             dataroom = await room.create(newRoom)
             return res.status(200).json({ data: dataroom, image:user2.image })
@@ -130,11 +131,12 @@ router.post('/newMessage', async function (req, res, next) {
         image: req.user.image,
         name: req.user.name
     }
-    messageModel.create(newMessage, function(err, result) {
+    messageModel.create(newMessage,async function(err, result) {
         if (err) {
             return res.status(300).send("Khong the them")
         }
         else {
+            await room.updateOne({_id: roomId},{$set:{updateAt: Date.now()}})
             return res.status(200).json( { roomId: roomId, message: message, createAt:createAt, image: req.user.image})
         }
 
