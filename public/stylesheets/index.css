@@ -88,9 +88,46 @@ body.dark {
     transform: translate(-50%, -50%);
 
 }
+#groupname{
+    height: 40px;
+    padding: 0px 10px;
+    padding-left: 35px;
+    width: 100%;
+    outline: none;
+    background-color: var(--background-input);
+    border: hidden;
+    color: var(--primary-color);
+    border-radius: 20px;
+}
+.group-name-container{
+    position: relative;
+}
+#search-input-group {
+    height: 40px;
+    padding: 0px 10px;
+    padding-left: 35px;
+    width: 100%;
+    outline: none;
+    background-color: var(--background-input);
+    border: hidden;
+    color: var(--primary-color);
+    border-radius: 20px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 
+}
+#staticBackdrop .modal-content{
+    background-color: var(--primary-bg-color);
+}
+.toast{
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
 
-.search span {
+.search span, .group-name-container span {
     position: absolute;
     left: 20px;
     top: 50%;
@@ -135,7 +172,9 @@ body.dark {
     height: 40px;
     border-radius: 40px;
 }
-
+#carouselExampleControls{
+    overflow: auto;
+}
 .partner_name {
     font-weight: 600;
     font-size: 1.0625rem;
@@ -152,9 +191,13 @@ body.dark {
     color: var(--secondary-text);
 }
 
-.user_left {
+.user_left, .group_left {
     padding-top: 15px;
+    overflow: auto;
+    max-height: calc(100% - 58px);
 }
+
+
 
 .user__left__item__img img {
     width: 56px;
@@ -167,7 +210,25 @@ body.dark {
     height: 54px;
     padding: 12px 0;
 }
-
+.nav-tabs .nav-link.active {
+    background-color: transparent !important;
+    border-color: #dee2e6 #dee2e6 #fff !important;
+}
+.nav-tabs .nav-link{
+    color: var(--primary-color);
+}
+.nav-tabs .nav-link.active{
+    color: #0D6EFD !important;
+    border-color: #0D6EFD !important;
+}
+.add-group{
+    width: 56px;
+    height: 56px;
+    border-radius: 100% !important;
+    margin-left: 8px;
+    margin-right: 12px;
+    align-self: center;
+}
 .user__left__item {
     height: 72px;
     padding: 0 8px;
@@ -175,6 +236,18 @@ body.dark {
     transition: background-color 50ms ease-in;
     cursor: pointer;
 
+}
+.user__group__item {
+    height: 72px;
+    padding: 0 8px;
+    border-radius: 8px;
+    transition: background-color 50ms ease-in;
+    cursor: pointer;
+
+}
+
+.add_group_chat{
+    align-self: center;
 }
 
 .user__left__item:hover {
@@ -351,8 +424,24 @@ body.dark {
     align-self: flex-end;
     margin-bottom: 6px;
 }
-
-#collapseSearch {
+.displayUserGroup .user_search__img{
+    margin-right: 10px;
+    position: relative;
+    outline: none;
+    margin-bottom: 10px;
+}
+#staticBackdrop .modal-header{
+    border-bottom: 0px !important;
+}
+#staticBackdrop .modal-footer{
+    border-top: 0px !important;
+}
+.displayUserGroup .user_search__img i{
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+#collapseSearch, #collapseSearch1 {
     position: absolute;
     /* bottom: 0; */
     top: 60px;
@@ -363,7 +452,7 @@ body.dark {
     z-index: 999999;
 }
 
-#collapseSearch .card {
+#collapseSearch .card , #collapseSearch1 .card {
     background-color: var(--primary-bg-color);
     max-height: 600px;
     overflow: hidden;
@@ -371,21 +460,21 @@ body.dark {
 
 }
 
-#collapseSearch .card:hover {
+#collapseSearch .card:hover, #collapseSearch1 .card:hover {
     overflow: auto;
 }
 
-#collapseSearch .card::-webkit-scrollbar {
+#collapseSearch .card::-webkit-scrollbar, #collapseSearch1 .card::-webkit-scrollbar {
     width: 8px;
 }
 
 /* Track */
-#collapseSearch .card::-webkit-scrollbar-track {
+#collapseSearch .card::-webkit-scrollbar-track, #collapseSearch1 .card::-webkit-scrollbar-track {
     background-color: var(--primary-bg-color);
 }
 
 /* Handle */
-#collapseSearch .card::-webkit-scrollbar-thumb {
+#collapseSearch .card::-webkit-scrollbar-thumb, #collapseSearch1 .card::-webkit-scrollbar-thumb {
     background: var(--background-input);
     border-radius: 10px;
 }
@@ -442,11 +531,11 @@ body.dark {
         height: 100%;
         top: 0px;
     }
-    .user_left{
+    .user_left, .group_left{
         padding-top: 0;
         position: relative;
     }
-    .user_left .loading{
+    .user_left .loading, .group_left .loading{
         width: 100%;
         align-items: center;
         height: 72px;
@@ -469,6 +558,10 @@ body.dark {
         padding-bottom: 5px;
     }
     .chat-container .user_left{
+        display: flex;
+        flex-direction: row !important;
+    }
+    .chat-container .group_left{
         display: flex;
         flex-direction: row !important;
     }

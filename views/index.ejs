@@ -38,6 +38,54 @@
 			</div>
 			<i style="font-size: 25px;" class="far fa-moon"></i>
 		</div>
+
+				<!-- Button trigger modal -->
+
+		
+		<!-- Modal -->
+		<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+				<h5 class="modal-title" id="staticBackdropLabel">Create Group Chat</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="add-user-group" action="" autocomplete="off">
+						<div class="search">
+							<input type="text" id="search-input-group" class="input_search_user" placeholder="Search user">
+							<span><i class="fas fa-search"></i></span>
+
+							<div class="collapse" id="collapseSearch1">
+								<div class="card ps-0 pe-0 card-body collapseSearchCard1">
+									<div class="loading hide d-flex justify-content-center">
+										<div class="spinner-border text-primary" role="status">
+											<span class="visually-hidden">Loading...</span>
+										</div>
+									</div>
+								</div>
+								<button type="button" class="btn-close btn-close-white" aria-label="Close"></button>
+							</div>
+						</div>
+						<div class="displayUserGroup d-flex align-items-center">
+							<!-- <div class="user_search__img" tabindex="0" data-bs-toggle="tooltip" title="Disabled tooltip">
+								<img src="https://lh3.googleusercontent.com/a-/AOh14GgFzXvYIHzLrj5cPHocrT5rXu95C3PDEbm8diRANw=s96-c" alt="user">
+								<i class="fas fa-times"></i>
+							</div> -->
+						</div>
+						<div class="group-name-container">
+							<input type="text" id="groupname" required placeholder="Group name" >
+							<span><i class="fas fa-file-signature"></i></span>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary create-group">Create Group</button>
+				</div>
+			</div>
+			</div>
+		</div>
                    
 		<div class="user d-flex justify-content-between align-items-center" tabindex="0"  data-bs-trigger="focus" data-bs-toggle="popover" data-bs-placement="bottom">
 			<div class="user__image">
@@ -73,24 +121,45 @@
 					<button type="button" class="btn-close btn-close-white" aria-label="Close"></button>
 				</div>
 			</div>
-			<div class="user_left">
-				<div class="loading hide d-flex justify-content-center hide">
-					<div class="spinner-border text-primary" role="status">
-						<span class="visually-hidden">Loading...</span>
-					</div>
+			<nav>
+				<div class="nav nav-tabs" id="nav-tab" role="tablist">
+					<button class="nav-link active single-chat " id="nav-home-tab" data-bs-target="#carouselExampleControls" data-bs-slide="prev"  data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Single Chat</button>
+					<button class="nav-link group-chat" id="nav-profile-tab" data-bs-target="#carouselExampleControls" data-bs-slide="next" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Group Chat</button>
+					
 				</div>
-				<!-- <div class="user__left__item user_display d-flex align-items-center">
-					<div class="user__left__item__img">
-						<img src="https://www.hebergementwebs.com/image/ec/eca71f9e3aabc2c6af43482274a8189f.jpg/la-dragonball-house-edition-forbids-sharing-manga-images-and-gif-1.jpg"
-							alt="user">
-					</div>
-					<div class="user__left__item__mess d-flex flex-column justify-content-center  align-items-baseline">
-						<span class="partner_name">asdasdas</span>
-						<span class="partner_mess">Ban: asdasd</span>
-					</div>
-				</div> -->
+			</nav>
+			<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" data-bs-wrap="false">
+				<div class="carousel-inner">
+					<div class="carousel-item active">
+						<div class="user_left">
+							<div class="loading hide d-flex justify-content-center hide">
+								<div class="spinner-border text-primary" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+							</div>
 
+						</div>
+				  	</div>
+				 	<div class="carousel-item">
+						<div class="group_left">
+							<div class="loading hide d-flex justify-content-center hide">
+								<div class="spinner-border text-primary" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+							</div>
+							<div class="add_group_chat">
+								<button type="button" class="btn btn-primary add-group" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+									<i class="fas fa-plus"></i>
+								</button><span class="user__left__item__mess">Them</span>
+							</div>
+							
+
+						</div>
+				  	</div>
+
+				</div>
 			</div>
+
 		</div>
 		<div class="right_chat ">
 			<div class="room_name hide d-flex justify-content-between">
@@ -102,7 +171,7 @@
 					<div class="ms-1 status d-flex flex-column ">
 						<span class="partner_name">
 						</span>
-						<span class="partner_stutus">
+						<span class="partner_status">
 						</span>
 					</div>
 				</div>
@@ -117,8 +186,55 @@
 				<span class="send-message"></a><i class="fas fa-paper-plane"></i></span>
 			</form>
 		</div>
+		<div class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" data-bs-autohide="true" data-bs-delay="3000" aria-atomic="true" auto-g>
+			<div class="d-flex">
+			  <div class="toast-body">
+			  </div>
+			  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+			</div>
+		  </div>
 	</div>
-</body>
 
+</body>
+<script>
+	$(document).ready(function(){
+		$(".create-group").click( async()=>{
+		let groupName = $("#groupname").val()
+		let groupUser = $(".displayUserGroup .user_search__img")
+		let groupUserId =[]
+		for(let i of groupUser ){
+			groupUserId.push($(i).data("userid"))
+		}
+		const response = await fetch("/api/addGroup", {
+			method: 'POST',
+			credentials: 'same-origin', // include, *same-origin, omit
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				groupName: groupName,
+				groupUserId:groupUserId,
+			})
+
+		});
+		let data = await response.json()
+		if (response.status === 200) {
+			$("#staticBackdrop input").val("")
+			$("#staticBackdrop .displayUserGroup").children().remove()
+			$("#staticBackdrop").modal("hide")
+			$(".modal-backdrop").hide()
+			$(".toast-body").text("Tạo nhóm thành công.")
+			$(".toast").toast('show');
+			//tao 1 room display
+
+
+			//socket emit cho nhung nguoi khac them vao group
+
+
+		}
+		
+	})
+	})
+</script>
 
 </html>

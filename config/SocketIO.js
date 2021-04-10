@@ -38,6 +38,10 @@ io.on("connection", function (client) {
         }
         client.to(roomId).emit('new-message',{data, sendById: client.userId, name:sendByName});
     })
+    client.on("new-group-chat", (data) => {
+        console.log(data)
+    })
+
     client.emit('list-users', users)
 
 

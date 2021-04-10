@@ -26,24 +26,14 @@ router.post('/getUser', async function (req, res, next) {
 
 router.post('/getRoom', async function (req, res, next) {
     let id = req.user.userId
-    const filter=async (item)=>{
-        let partner = item.users.filter(e => e.id != id) 
-        let partnerInfo = await user.findOne({userId: partner[0].id})
-        let image =partnerInfo.image
-        return {roomId: item._id, userId: partner[0].id, name: partner[0].name, image: image}
-    }
-    const getAllfilter=(data)=>{
-        const promises = data.map(async item=> await filter(item))
-        return Promise.all(promises);
-    }
+
     if (!id) {
         return res.send("Missing id")
     }
     try {
 
         let data = await room.find({"users.id": id}).sort({updateAt: -1})
-        let filterData =await getAllfilter(data)
-        res.status(200).json({ data: filterData  })
+        res.status(200).json({ data: data })
         
     } catch (error) {
         console.log(error)
@@ -82,11 +72,13 @@ router.post('/getRoomById', async function (req, res, next) {
 
                     {
                         "id": user1.userId,
-                        "name":user1.name
+                        "name":user1.name,
+                        "image":user1.image
                     },
                     {
                         "id": user2.userId,
-                        "name":user2.name
+                        "name":user2.name,
+                        "image":user2.image
                     }
                 ],
                 updateAt:Date.now()
@@ -96,9 +88,9 @@ router.post('/getRoomById', async function (req, res, next) {
         }
         let message
         if (time != null && time) {
-            message = await messageModel.find({ roomId: data._id, createAt: { $lt: time }}).sort({ "createAt": -1 }).limit(20)
+            message = await messageModel.find({ roomId: data._id, createAt: { $lt: time }}).sort({ "createAt": -1 }).limit(40)
         } else {
-            message = await messageModel.find({ roomId: data._id }).sort({ "createAt": -1 }).limit(20)
+            message = await messageModel.find({ roomId: data._id }).sort({ "createAt": -1 }).limit(40)
         }
         
         message = message.map(e => {
@@ -156,6 +148,59 @@ router.post('/lastMessage', async function (req, res, next) {
         return res.status(200).json({data:data})
     } catch (error) {
         
+    }
+});
+
+router.post('/addGroup', async function (req, res, next) {
+    let {groupName, groupUserId} = req.body
+    let groupUser = []
+    if(!groupName || !groupUserId ){
+        return res.status(300).send("Invalid data")
+    }
+    
+    if(groupUserId.length < 2)  return res.status(300).send("User must be greater than 2")
+    groupUserId.push(req.user.userId)
+
+    for(let i of groupUserId){
+        let user_info = await user.findOne({userId: i})
+        groupUser.push({id:user_info.userId,name: user_info.name, image: user_info.image})
+    }
+
+    try {
+        let newRoom = {
+            users:groupUser,
+            roomName : groupName,
+            updateAt:Date.now()
+        }
+        dataroom = await room.create(newRoom)
+        return res.status(200).json({ data: dataroom})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send("Some error")
+    }
+});
+
+router.post('/getRoomByRoomId', async function (req, res, next) {
+    let {id, time} = req.body
+    if(!id){
+        return res.status(300).send("Invalid data")
+    }
+    try {
+        let message =await messageModel.find({roomId: id})
+
+        if (time != null && time) {
+            message = await messageModel.find({ roomId: id, createAt: { $lt: time }}).sort({ "createAt": -1 }).limit(40)
+        } else {
+            message = await messageModel.find({ roomId: id }).sort({ "createAt": -1 }).limit(40)
+        }
+        message = message.map(e => {
+            let isMe = e.userId == req.user.userId
+            return {message: e.message, createAt: e.createAt,image: e.image , isMe:isMe, userId: e.userId, name:e.name}
+        })
+        return res.status(200).json({ data: message})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send("Some error")
     }
 });
 
