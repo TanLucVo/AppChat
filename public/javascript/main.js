@@ -158,7 +158,7 @@ if($(".user__left__item[data-roomid=" + roomId + "]").parent().hasClass("group_l
 			"font-weight": 600
 		})
 	}
-	$(".group_left .user__left__item[data-roomid=" + roomId + "]").insertAfter(".group_left .loading")
+	$(".group_left .user__left__item[data-roomid=" + roomId + "]").insertAfter(".group_left .add_group_chat")
 }else{
 	$(".user__left__item[data-roomid=" + roomId + "] .user__left__item__mess .partner_mess").text(`${name}: ${message}`)
 	if (!$(".right_chat .room-container[data-roomid=" + roomId + "]")[0]) {
@@ -559,14 +559,15 @@ $(document).ready(function () {
 	$("#login_form input").keypress(function () {
 		$("#login_form .show-error-login").fadeOut("slow");
 	})
-	var popover = new bootstrap.Popover(document.querySelector('.user[data-bs-toggle="popover"]'), {
+
+	$('.user[data-bs-toggle="popover"]').popover({
 		trigger: 'focus',
 		html: true,
 		content: "<a href='/auth/logout'>Đăng xuất</a>"
 	})
-	if ($(".chat-container")[0]) {
 
-		
+
+	if ($(".chat-container")[0]) {
 
 		let userOnline = [];
 		const socket = io()
@@ -607,6 +608,24 @@ $(document).ready(function () {
 		socket.on("user-leave", id => {
 			userOnline = userOnline.filter(e => e.id !== id)
 		})
+		socket.on("new-group-chat", data => {
+			console.log(data)
+			let roomName = data.data.roomName
+			let image = data.data.users[0].image
+			let roomId = data.data._id
+			$(`
+				<div class="user__left__item user_display d-flex align-items-center" data-userid="${data.data.users[0].id}" data-roomid="${roomId}">
+					<div class="user__left__item__img">
+						<img src="${image}" alt="user">
+					</div>
+					<div class="user__left__item__mess d-flex flex-column justify-content-center  align-items-baseline">
+						<span class="partner_name">${roomName}</span>
+						<span class="partner_mess"></span>
+					</div>
+				</div>`).insertAfter($(".add_group_chat"))
+		})
+
+		
 
 		$(document).click(function (event) {
 			var clickover = $(event.target);
@@ -705,7 +724,7 @@ $(document).ready(function () {
 					data = await loadRoomByID(userId, null)
 					mess = data.message.reverse()
 				}
-				console.log(data)
+
 				
 				$(".right_chat .room-container").children('.loading-chat').remove()
 
@@ -816,6 +835,60 @@ $(document).ready(function () {
 
 
 		})
+		$(".create-group").click( async()=>{
+			let groupName = $("#groupname").val()
+			let groupUser = $(".displayUserGroup .user_search__img")
+			let groupUserId =[]
+			for(let i of groupUser ){
+				groupUserId.push($(i).data("userid"))
+			}
+			try {
+				const response = await fetch("/api/addGroup", {
+					method: 'POST',
+					credentials: 'same-origin', // include, *same-origin, omit
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						groupName: groupName,
+						groupUserId:groupUserId,
+					})
+
+				});
+				let data = await response.json()
+				if (response.status === 200) {
+					$("#staticBackdrop input").val("")
+					$("#staticBackdrop .displayUserGroup").children().remove()
+					$("#staticBackdrop").modal("hide")
+					$(".modal-backdrop").hide()
+					$(".toast-body").text("Tạo nhóm thành công.")
+					$(".toast").toast('show');
+					//tao 1 room display
+					let roomName = data.data.roomName
+					let image = data.data.users[0].image
+					let roomId = data.data._id
+
+					$(`
+						<div class="user__left__item user_display d-flex align-items-center" data-userid="${groupUserId[0]}" data-roomid="${roomId}">
+							<div class="user__left__item__img">
+								<img src="${image}" alt="user">
+							</div>
+							<div class="user__left__item__mess d-flex flex-column justify-content-center  align-items-baseline">
+								<span class="partner_name">${roomName}</span>
+								<span class="partner_mess"></span>
+							</div>
+						</div>`).insertAfter($(".add_group_chat"))
+					//socket emit cho nhung nguoi khac them vao group
+					
+					socket.emit("new-group-chat", data)
+				}
+			} catch (error) {
+				console.log(error)
+			}
+			
+			
+		})
+		
 	}
 
 	$(".nav-tabs .nav-link").click(()=>{

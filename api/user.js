@@ -155,11 +155,12 @@ router.post('/addGroup', async function (req, res, next) {
     let {groupName, groupUserId} = req.body
     let groupUser = []
     if(!groupName || !groupUserId ){
-        return res.status(300).send("Invalid data")
+        return res.status(300).json({ data: "Invalid data" })
     }
-    
-    if(groupUserId.length < 2)  return res.status(300).send("User must be greater than 2")
     groupUserId.push(req.user.userId)
+    
+
+    if(groupUserId.length < 2)  return res.status(300).json({data : "User must be greater than 2"})
 
     for(let i of groupUserId){
         let user_info = await user.findOne({userId: i})

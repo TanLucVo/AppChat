@@ -183,7 +183,7 @@
 				<div class="input_container">
 					<div class="input_chat" contenteditable="true"></div>
 				</div>
-				<span class="send-message"></a><i class="fas fa-paper-plane"></i></span>
+				<span class="send-message"><i class="fas fa-paper-plane"></i></span>
 			</form>
 		</div>
 		<div class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" data-bs-autohide="true" data-bs-delay="3000" aria-atomic="true" auto-g>
@@ -198,42 +198,9 @@
 </body>
 <script>
 	$(document).ready(function(){
-		$(".create-group").click( async()=>{
-		let groupName = $("#groupname").val()
-		let groupUser = $(".displayUserGroup .user_search__img")
-		let groupUserId =[]
-		for(let i of groupUser ){
-			groupUserId.push($(i).data("userid"))
-		}
-		const response = await fetch("/api/addGroup", {
-			method: 'POST',
-			credentials: 'same-origin', // include, *same-origin, omit
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				groupName: groupName,
-				groupUserId:groupUserId,
-			})
-
-		});
-		let data = await response.json()
-		if (response.status === 200) {
-			$("#staticBackdrop input").val("")
-			$("#staticBackdrop .displayUserGroup").children().remove()
-			$("#staticBackdrop").modal("hide")
-			$(".modal-backdrop").hide()
-			$(".toast-body").text("Tạo nhóm thành công.")
-			$(".toast").toast('show');
-			//tao 1 room display
-
-
-			//socket emit cho nhung nguoi khac them vao group
-
-
-		}
 		
-	})
+
+		
 	})
 </script>
 

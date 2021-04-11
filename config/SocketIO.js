@@ -29,6 +29,10 @@ io.on("connection", function (client) {
 
         usersId = usersId.users.map(e => parseInt(e.id))
         sendByName = sendByName[0].name
+        if (io.sockets.adapter.rooms.get(roomId)) {
+            client.to(roomId).emit('new-message', { data, sendById: client.userId, name: sendByName });
+            return 
+        }
 
         let allSocket = Array.from(io.sockets.sockets.values())
         for (let i of allSocket) {
@@ -36,10 +40,20 @@ io.on("connection", function (client) {
                 i.join(roomId);
             }
         }
+
         client.to(roomId).emit('new-message',{data, sendById: client.userId, name:sendByName});
     })
     client.on("new-group-chat", (data) => {
-        console.log(data)
+        let { roomName, updateAt, users, _v, _id } = data.data
+        let usersId = users.map(e => e.id).filter(e => e.id != client.userId)
+        let allSocket = Array.from(io.sockets.sockets.values())
+        for (let i of allSocket) {
+            if (usersId.includes(i.userId)) {
+                i.join(_id);
+            }
+        }
+        client.to(_id).emit('new-group-chat',data);
+        
     })
 
     client.emit('list-users', users)
