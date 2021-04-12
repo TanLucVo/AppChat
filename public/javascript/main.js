@@ -40,7 +40,6 @@ let mode = localStorage.getItem("mode") || 'light';
 	}
 function loadmorechat(mess) {
 	for (let i of mess) {
-		console.log(i)
 		if (i.isMe) {
 
 			if ($(".right_chat .room-container").children().first().hasClass("me")) {
@@ -609,7 +608,6 @@ $(document).ready(function () {
 			userOnline = userOnline.filter(e => e.id !== id)
 		})
 		socket.on("new-group-chat", data => {
-			console.log(data)
 			let roomName = data.data.roomName
 			let image = data.data.users[0].image
 			let roomId = data.data._id
@@ -667,6 +665,7 @@ $(document).ready(function () {
 			let userId = $(this).data("userid")
 			let roomId = $(this).data("roomid")
 			if (!roomId) {
+
 				$(".partner_image img").attr("src", $(this).children(".user_search__img").children("img").attr("src"))
 				//create message  container
 				$(".room_name .partner_name").text($(this).children(".user_search__name").children("p").text())
@@ -674,10 +673,11 @@ $(document).ready(function () {
 					$(".right_chat .room-container").children().not(".loading-chat").fadeOut(0)
 					let test = await loadRoomByID(userId, null)
 					roomId = test.data._id
-					$(this).data("roomid", "asdasdasdasdasd")
+					$(this).data("roomid", roomId)
 					$(".right_chat .room-container").children().not(".loading-chat").fadeIn(0)
 
 				} catch (error) {
+					console.log(error)
 					$(".right_chat .room-container").children().not(".loading-chat").fadeIn(0)
 				}
 
@@ -694,6 +694,8 @@ $(document).ready(function () {
 					$(".room_name .partner_name").text($(this).children(".user_search__name").children("p").text())
 				}
 			}
+
+
 
 			if ($(".user_left  .room-container[data-roomid=" + roomId + "]")[0]) {
 				let chatroom = $(".user_left  .room-container[data-roomid=" + roomId + "]")
@@ -788,10 +790,11 @@ $(document).ready(function () {
 				userid,
 				roomid
 			} = $(".right_chat .room-container").data()
-			if (!$(`.user__left__item[data-userid=${userid}]`)[0]) {
+			if (!$(`.user__left__item[data-roomid=${roomid}]`)[0]) {
 
-				let image = $(`#collapseSearch .user_display[data-userid=${userid}] .user_search__img img`).attr("src")
-				let name = $(`#collapseSearch .user_display[data-userid=${userid}] .user_search__name  p`).text()
+				let image = $(`.right_chat .partner_image img`).attr("src")
+				let name = $(`.right_chat .partner_name`).text()
+
 				$(".user_left .loading").after(`
 						<div class="user__left__item user_display d-flex align-items-center" data-userid="${userid}" data-roomid="${roomid}">
 							<div class="user__left__item__img">
@@ -805,7 +808,7 @@ $(document).ready(function () {
 					`)
 			}
 			let roomchat = $(".user__left__item[data-roomid="+roomid+"]")
-			if(roomchat.parent().hasClass("group_left")){
+			if (roomchat.parent().hasClass("group_left")) {
 				roomchat.children(".user__left__item__mess").children(".partner_mess").text(`Bạn: ${message}`)
 				roomchat.insertAfter($(".group_left .add_group_chat"))
 			}else{

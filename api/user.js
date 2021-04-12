@@ -59,10 +59,17 @@ router.post('/getRoomById', async function (req, res, next) {
             return res.status(500).json({ error:"user khong ton tai" })
         }
         let data = await room.findOne({
-            $or: [
-                { $and: [{ "users.0.id": user1.userId }, { "users.1.id": user2.userId }] },
-                { $and: [{ "users.0.id": user2.userId }, { "users.1.id": user1.userId }] }
-            ],
+            $and:[
+                {$or: [
+                    { $and: [{ "users.0.id": user1.userId }, { "users.1.id": user2.userId }] },
+                    { $and: [{ "users.0.id": user2.userId }, { "users.1.id": user1.userId }] }
+                ]
+                },
+                {
+                    "roomName": { $exists: false } 
+                }
+            ]
+            
             
         })
 
