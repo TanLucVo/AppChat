@@ -106,8 +106,7 @@ let sendById = data.sendById
 let name = data.name
 if (!$(".room-container[data-roomid=" + roomId + "]")[0]) {
 	//find user
-	if (!$(".room-container[data-userid=" + sendById + "]")[0] && $(".user__left__item[data-userid=" + sendById + "]")[0]) {
-
+	if (!$(".room-container[data-roomid=" + roomId + "]")[0] && $(".user__left__item[data-roomid=" + roomId + "]")[0]) {
 
 	} else {
 		$(".user_left .loading").after(`
