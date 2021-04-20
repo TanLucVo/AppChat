@@ -189,7 +189,6 @@ try {
 
 	});
 	let data = await response.json()
-	console.log(data)
 	let string = ""
 	let stringGroup = ""
 	let cookie = document.cookie
