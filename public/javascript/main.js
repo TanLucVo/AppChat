@@ -189,6 +189,7 @@ try {
 
 	});
 	let data = await response.json()
+	console.log(data)
 	let string = ""
 	let stringGroup = ""
 	let cookie = document.cookie
@@ -196,6 +197,7 @@ try {
 	let name = ""
 	for (let i of data.data) {
 		let lastMessage = "";
+		let partner=""
 		let roomId = i._id;
 		let userId = i.users.filter(e => e.id !=cookie).map(e=>e.id)
 		let image = i.users.filter(e => e.id !=cookie).map(e=>e.image)
@@ -248,16 +250,25 @@ try {
 									</div>
 								</div>`
 			}
-			
 			continue
-		} 
+		} else {
+			try {
+				partner = i.users.filter(e => e.id !== cookie)
+				partner = partner[0].name
+			} catch (error) {
+				console.log(error);
+				partner = ""
+			}
+			
+		}
+
 		string += `<div class="user__left__item user_display d-flex align-items-center" data-userid=${userId[0]} data-roomid = ${roomId}>
 									<div class="user__left__item__img">
 										<img src="${image[0]}"
 											alt="user">
 									</div>
 									<div class="user__left__item__mess d-flex flex-column justify-content-center  align-items-baseline">
-										<span class="partner_name">${name}</span>
+										<span class="partner_name">${partner}</span>
 										<span class="partner_mess">${name}: ${lastMessage}</span>
 									</div>
 								</div>`
