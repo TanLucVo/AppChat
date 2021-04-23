@@ -1,5 +1,6 @@
 var express = require('express');
 const room = require('../models/room');
+const groupChat = require('../models/group');
 const user = require('../models/user');
 var router = express.Router();
 const messageModel = require('../models/message');
@@ -24,7 +25,7 @@ router.post('/getUser', async function (req, res, next) {
     }
 });
 
-router.post('/getRoom', async function (req, res, next) {
+router.post('/getRoomSigle', async function (req, res, next) {
     let id = req.user.userId
 
     if (!id) {
@@ -32,7 +33,23 @@ router.post('/getRoom', async function (req, res, next) {
     }
     try {
 
-        let data = await room.find({"users.id": id}).sort({updateAt: -1})
+        let data = await room.find({"users.id": id}).sort({updateAt: -1}).limit(10)
+        res.status(200).json({ data: data })
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).send("Can't get data")
+    }
+});
+router.post('/getRoomGroup', async function (req, res, next) {
+    let id = req.user.userId
+
+    if (!id) {
+        return res.send("Missing id")
+    }
+    try {
+
+        let data = await groupChat.find({"users.id": id}).sort({updateAt: -1}).limit(10)
         res.status(200).json({ data: data })
         
     } catch (error) {
@@ -180,7 +197,7 @@ router.post('/addGroup', async function (req, res, next) {
             roomName : groupName,
             updateAt:Date.now()
         }
-        dataroom = await room.create(newRoom)
+        dataroom = await groupChat.create(newRoom)
         return res.status(200).json({ data: dataroom})
     } catch (error) {
         console.log(error)
@@ -189,6 +206,30 @@ router.post('/addGroup', async function (req, res, next) {
 });
 
 router.post('/getRoomByRoomId', async function (req, res, next) {
+    let {id, time} = req.body
+    if(!id){
+        return res.status(300).send("Invalid data")
+    }
+    try {
+        let message =await messageModel.find({roomId: id})
+
+        if (time != null && time) {
+            message = await messageModel.find({ roomId: id, createAt: { $lt: time }}).sort({ "createAt": -1 }).limit(40)
+        } else {
+            message = await messageModel.find({ roomId: id }).sort({ "createAt": -1 }).limit(40)
+        }
+        message = message.map(e => {
+            let isMe = e.userId == req.user.userId
+            return {message: e.message, createAt: e.createAt,image: e.image , isMe:isMe, userId: e.userId, name:e.name}
+        })
+        return res.status(200).json({ data: message})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send("Some error")
+    }
+});
+
+router.post('/getGroupChat', async function (req, res, next) {
     let {id, time} = req.body
     if(!id){
         return res.status(300).send("Invalid data")

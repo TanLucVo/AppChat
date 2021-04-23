@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const RoomSchema = mongoose.Schema({
+const groupSchema = mongoose.Schema({
 
     roomName: {
         type: String,
@@ -14,8 +14,12 @@ const RoomSchema = mongoose.Schema({
 		type: Number,
 		required: true,
     },
+    image: {
+        type: String,
+		required: false,
+    }
 
 
 })
 
-module.exports = mongoose.model('single-chat', RoomSchema)
+module.exports = mongoose.model('group-chat', groupSchema)

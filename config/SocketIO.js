@@ -1,4 +1,5 @@
 const roomModel = require("../models/room");
+const groupModel = require("../models/group");
 
 const io = require("socket.io")();
 const socketIO = {
@@ -23,8 +24,21 @@ io.on("connection", function (client) {
         client.broadcast.emit("register-id",{id:client.id, userId:userId})
     })
     client.on("send-room", async (data) => {
-        let { roomId, message, createAt, image } = data
-        let usersId =await roomModel.findOne({ _id: roomId })
+        let { roomId, message, image, type } = data
+        let usersId;
+        if (!type) {
+            return
+        }
+       
+        if (type && type === "group") {
+            usersId = await groupModel.findOne({ _id: roomId })
+        } else {
+            usersId = await roomModel.findOne({ _id: roomId })
+        }
+        if (usersId == null) {
+            return
+        }
+
         let sendByName = usersId.users.filter(e => e.id == client.userId);
 
         usersId = usersId.users.map(e => parseInt(e.id))
