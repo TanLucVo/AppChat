@@ -174,6 +174,7 @@ body.dark {
 }
 #carouselExampleControls{
     overflow: auto;
+    min-height: 72px;
 }
 .partner_name {
     font-weight: 600;
@@ -230,6 +231,7 @@ body.dark {
     align-self: center;
 }
 .user__left__item {
+    position: relative;
     height: 72px;
     padding: 0 8px;
     border-radius: 8px;
@@ -245,9 +247,13 @@ body.dark {
     cursor: pointer;
 
 }
+.user__left__item__img{
+    position: relative;
+}
 
 .add_group_chat{
     align-self: center;
+
 }
 
 .user__left__item:hover {
@@ -518,7 +524,24 @@ body.dark {
 .user_left  .room-container{
     display: none !important;
 }
-
+.status.online{
+    background: #46AB5E;
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    bottom: 5px;
+    right: 15px;
+    border-radius: 10px;
+}
+.status.offline {
+    background: red;
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    bottom: 5px;
+    right: 15px;
+    border-radius: 10px;
+}
 @media only screen and (max-width: 600px) {
    
     body{
@@ -530,6 +553,7 @@ body.dark {
         position: relative;
         height: 100%;
         top: 0px;
+        overflow: auto;
     }
     .user_left, .group_left{
         padding-top: 0;
@@ -542,6 +566,7 @@ body.dark {
     }
     .room-container{
         padding:0px 8px;
+        min-height: 500px;
     }
     .right_chat {
         width: 100%;
@@ -565,12 +590,25 @@ body.dark {
         display: flex;
         flex-direction: row !important;
     }
-    .chat-container .user__left__item__mess {
+    .chat-container .user__left__item__mess .partner_mess {
         display: none !important;
+    }
+
+    .chat-container .user__left__item {
+        flex-direction: column;
     }
     .chat-container .user__left__item__img img{
         margin-right: 0;
+        position: relative;
     }
+    .user__left__item__mess{
+        padding: 0;
+    }
+    .partner_name,
+    .user__left__item__mess {
+        font-size: 10px;
+    }
+ 
     .form_chat{
         padding: 5px 8px;
         position: relative;
@@ -588,7 +626,20 @@ body.dark {
         transform: translate(0%, -50%);
         background: transparent;
     }
-
+    .status.online {
+        z-index: 1;
+        right: 5px;
+    }
+    #carouselExampleControls{
+        overflow-y: hidden;
+        height: 72px;
+    }
+    .add_group_chat {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 
 }
 @media only screen and (max-width: 400px) {

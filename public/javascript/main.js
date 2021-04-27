@@ -242,7 +242,7 @@ function delay(ms) {
 }
 
 function displayChat(mess) {
-	let time = mess[0].createAt;
+	let time = mess[0]?mess[0].createAt: Date.now();
 	$(".right_chat .room-container ").css("max-height", $(".right_chat").outerHeight() - $(".room_name ").outerHeight() - $(".form_chat ").outerHeight())
 	let roomId;
 	let isAnotherUser = false;
@@ -315,9 +315,12 @@ function displayChat(mess) {
 
 
 $(document).ready(function () {
-	async function loadAndDiaplayRoom() {
+	async function loadAndDiaplayRoom(number = 0) {
 			//loadmessage
-			$(".user_left .loading").removeClass("hide")
+			if (number == 0) {
+				$(".user_left .loading").removeClass("hide")
+			}
+			
 			// $(".group_left .loading").removeClass("hide")
 			$(".user_left").css("overflow", "hidden")
 			// $(".group_left").css("overflow", "hidden")
@@ -328,6 +331,9 @@ $(document).ready(function () {
 					headers: {
 						'Content-Type': 'application/json'
 					},
+					body: JSON.stringify({
+						number: number
+					})
 
 				});
 				let data = await response.json()
@@ -335,38 +341,22 @@ $(document).ready(function () {
 				let stringGroup = ""
 				let cookie = document.cookie
 				cookie = cookie.replace("idUser=", "")
-				let name = ""
 				for (let i of data.data) {
-					let lastMessage = "";
+					let lastMessage = ""
+					let name = ""
+					let idSend = ""
+					if (i.lastMessage) {
+						[lastMessage, name, idSend] = i.lastMessage
+						if (cookie == idSend) {
+							name = "Bạn"
+						}
+					}
 					let partner = ""
 					let roomId = i._id;
 					let userId = i.users.filter(e => e.id != cookie).map(e => e.id)
 					let image = i.users.filter(e => e.id != cookie).map(e => e.image)
 
-					try {
-						const response1 = await fetch("/api/lastMessage", {
-							method: 'POST',
-							credentials: 'same-origin', // include, *same-origin, omit
-							headers: {
-								'Content-Type': 'application/json'
-							},
-							body: JSON.stringify({
-								roomId: roomId
-							})
-
-						});
-						let data_mess = await response1.json()
-						lastMessage = data_mess.data[0].message
-						if (cookie == data_mess.data[0].userId) {
-							name = "Bạn"
-						} else {
-							name = data_mess.data[0].name
-						}
-
-					} catch (error) {
-						lastMessage = ""
-					}
-					if (lastMessage === "") continue
+					if (lastMessage === "" || !lastMessage) continue
 					try {
 						partner = i.users.filter(e => e.id !== cookie)
 						partner = partner[0].name
@@ -377,6 +367,7 @@ $(document).ready(function () {
 
 					string += `<div class="user__left__item user_display d-flex align-items-center" data-roomid = ${roomId} data-userid = ${userId}>
 									<div class="user__left__item__img">
+										<div class="status"></div>
 										<img src="${image[0]}"
 											alt="user">
 									</div>
@@ -392,7 +383,11 @@ $(document).ready(function () {
 				$(".user_left .loading").addClass("hide")
 				$(".user_left").append(string)
 				$(".user_left").css("overflow", "auto")
-
+				
+				//online status
+				userOnline.forEach(u => {
+					$(`.user__left__item[data-userid=${u.userId}] .status`).addClass("online")
+				})
 			} catch (error) {
 				console.log(error)
 
@@ -403,9 +398,11 @@ $(document).ready(function () {
 
 		}
 
-		async function loadAndDiaplayGroup() {
+		async function loadAndDiaplayGroup(number = 0) {
 			//loadmessage
-			$(".group_left .loading").removeClass("hide")
+			if (number == 0) {
+				$(".group_left .loading").removeClass("hide")
+			}
 			$(".group_left").css("overflow", "hidden")
 			try {
 				const response = await fetch("/api/getRoomGroup", {
@@ -414,46 +411,60 @@ $(document).ready(function () {
 					headers: {
 						'Content-Type': 'application/json'
 					},
+					body: JSON.stringify({
+						number: number
+					})
 
 				});
 				let data = await response.json()
+
 				let string = ""
 				let stringGroup = ""
 				let cookie = document.cookie
 				cookie = cookie.replace("idUser=", "")
 				let name = ""
 				for (let i of data.data) {
-					let lastMessage = "";
+					let lastMessage = ""
+					let name = ""
+					let idSend = ""
+					if (i.lastMessage) {
+						[lastMessage, name, idSend] = i.lastMessage
+						if (cookie == idSend) {
+							name = "Bạn"
+						}
+					}
+					
 					let partner = ""
 					let roomId = i._id;
 					let userId = i.users.filter(e => e.id != cookie).map(e => e.id)
 					let image = i.users.filter(e => e.id != cookie).map(e => e.image)
 
-					try {
-						const response1 = await fetch("/api/lastMessage", {
-							method: 'POST',
-							credentials: 'same-origin', // include, *same-origin, omit
-							headers: {
-								'Content-Type': 'application/json'
-							},
-							body: JSON.stringify({
-								roomId: roomId
-							})
+					// try {
+					// 	const response1 = await fetch("/api/lastMessage", {
+					// 		method: 'POST',
+					// 		credentials: 'same-origin', // include, *same-origin, omit
+					// 		headers: {
+					// 			'Content-Type': 'application/json'
+					// 		},
+					// 		body: JSON.stringify({
+					// 			roomId: roomId
+					// 		})
 
-						});
-						let data_mess = await response1.json()
-						lastMessage = data_mess.data[0].message
-						if (cookie == data_mess.data[0].userId) {
-							name = "Bạn"
-						} else {
-							name = data_mess.data[0].name
-						}
-					} catch (error) {
-						lastMessage = ""
-					}
-					if (lastMessage === "") {
+					// 	});
+					// 	let data_mess = await response1.json()
+					// 	lastMessage = data_mess.data[0].message
+					// 	if (cookie == data_mess.data[0].userId) {
+					// 		name = "Bạn"
+					// 	} else {
+					// 		name = data_mess.data[0].name
+					// 	}
+					// } catch (error) {
+					// 	lastMessage = ""
+					// }
+					if (lastMessage === "" || !lastMessage) {
 						stringGroup += `<div class="user__left__item user_display group d-flex align-items-center" data-roomid = ${roomId}>
 								<div class="user__left__item__img">
+									<div class="status"></div>
 									<img src="${image[0]}"
 										alt="user">
 								</div>
@@ -465,6 +476,7 @@ $(document).ready(function () {
 					} else {
 						stringGroup += `<div class="user__left__item user_display d-flex align-items-center" data-roomid = ${roomId}>
 								<div class="user__left__item__img">
+									<div class="status"></div>
 									<img src="${image[0]}"
 										alt="user">
 								</div>
@@ -535,10 +547,9 @@ $(document).ready(function () {
 			let userId = $(this).data("userid")
 			let roomId = $(this).data("roomid")
 			if (!roomId) {
-
-				$(".partner_image img").attr("src", $(this).children(".user_search__img").children(
-					"img").attr("src"))
+				$(".partner_image img").attr("src", $(this).children(".user_search__img").children("img").attr("src"))
 				//create message  container
+
 				$(".room_name .partner_name").text($(this).children(".user_search__name").children("p")
 					.text())
 				try {
@@ -557,7 +568,7 @@ $(document).ready(function () {
 			} else {
 				if ($(this).children(".user__left__item__img").children()[0]) {
 					$(".partner_image img").attr("src", $(this).children(".user__left__item__img")
-						.children().attr("src"))
+						.children("img").attr("src"))
 					//create message  container
 					$(".room_name .partner_name").text($(this).children(".user__left__item__mess")
 						.children(".partner_name").text())
@@ -571,6 +582,7 @@ $(document).ready(function () {
 				}
 			}
 
+			
 
 
 			if ($(".user_left  .room-container[data-roomid=" + roomId + "]")[0]) {
@@ -614,7 +626,7 @@ $(document).ready(function () {
 			$(".right_chat .room-container").animate({
 				scrollTop: $(".right_chat .room-container").prop("scrollHeight")
 			}, 0);
-			$(".user__left__item[data-userid=" + userId + "] .user__left__item__mess .partner_mess")
+			$(".user__left__item[data-roomid=" + roomId + "] .user__left__item__mess .partner_mess")
 				.css({
 					"color": "var(--secondary-text)",
 					"font-weight": 400
@@ -680,7 +692,7 @@ $(document).ready(function () {
 			$(".right_chat .room-container").animate({
 				scrollTop: $(".right_chat .room-container").prop("scrollHeight")
 			}, 0);
-			$(".user__left__item[data-roomid=" + roomId + "] .user__left__item__mess .partner_mess")
+			$(`user__left__item[data-roomid=${roomId}] .user__left__item__mess .partner_mess`)
 				.css({
 					"color": "var(--secondary-text)",
 					"font-weight": 400
@@ -724,6 +736,7 @@ $(document).ready(function () {
 					$(`
 						<div class="user__left__item group_display d-flex align-items-center" data-roomid="${roomId}">
 							<div class="user__left__item__img">
+								<div class="status"></div>
 								<img src="${image}" alt="user">
 							</div>
 							<div class="user__left__item__mess d-flex flex-column justify-content-center  align-items-baseline">
@@ -781,6 +794,7 @@ $(document).ready(function () {
 				$(".user_left .loading").after(`
 						<div class="user__left__item user_display d-flex align-items-center" data-userid="${userid}" data-roomid="${roomid}">
 							<div class="user__left__item__img">
+								<div class="status"></div>
 								<img src="${image}" alt="user">
 							</div>
 							<div class="user__left__item__mess d-flex flex-column justify-content-center  align-items-baseline">
@@ -853,6 +867,7 @@ $(document).ready(function () {
 					$(".user_left .loading").after(`
 					<div class="user__left__item user_display d-flex align-items-center" data-userid="${sendById}" data-roomid="${roomId}">
 						<div class="user__left__item__img">
+							<div class="status"></div>
 							<img src="${image}" alt="user">
 						</div>
 						<div class="user__left__item__mess d-flex flex-column justify-content-center  align-items-baseline">
@@ -928,6 +943,7 @@ $(document).ready(function () {
 		});
 		socket.on('disconnect', () => {
 			console.log("Mat ket noi voi server");
+
 		});
 
 		socket.on("register-id", data => {
@@ -937,14 +953,17 @@ $(document).ready(function () {
 			} = data;
 			let user = userOnline.find(u => u.id == id)
 			user.userId = userId
+			$(`.user__left__item[data-userid=${userId}] .status`).addClass("online")
 		})
 
 		socket.on("list-users", users => {
 			users.forEach(u => {
 				if (u.id !== socket.id) {
 					userOnline.push(u)
+					$(`.user__left__item[data-userid=${u.userId}] .status`).addClass("online")
 				}
 			})
+			
 		})
 		socket.on("new-message", data => {
 			addChatPartner(data)
@@ -955,8 +974,9 @@ $(document).ready(function () {
 		socket.on("new-user", data => {
 			userOnline.push(data)
 		})
-		socket.on("user-leave", id => {
-			userOnline = userOnline.filter(e => e.id !== id)
+		socket.on("user-leave", ({id, userId}) => {
+			userOnline = userOnline.filter(e => e.id !== id);
+			$(`.user__left__item[data-userid=${userId}] .status`).removeClass("online")
 		})
 		socket.on("new-group-chat", data => {
 			let roomName = data.data.roomName
@@ -965,6 +985,8 @@ $(document).ready(function () {
 			$(`
 				<div class="user__left__item group_display d-flex align-items-center" data-roomid="${roomId}">
 					<div class="user__left__item__img">
+						
+						<div class="status"></div>
 						<img src="${image}" alt="user">
 					</div>
 					<div class="user__left__item__mess d-flex flex-column justify-content-center  align-items-baseline">
@@ -1120,6 +1142,23 @@ $(document).ready(function () {
 
 		}
 	})
+	$('#carouselExampleControls').on('scroll', async function() {
+		let div = $(this).get(0);
+		let numSigle = $(".user_left .user__left__item").length
+		let numGroup = $(".group_left .user__left__item").length
+		if(div.scrollTop + div.clientHeight >= div.scrollHeight) {
+			// console.log(numSigle, numGroup)
+
+			if($(".carousel-item.active .user_left")[0] && numSigle >=11 ){
+				//singlechat
+				loadAndDiaplayRoom(numGroup)
+			}else if($(".carousel-item.active .group_left")[0] &&numGroup >=11){
+				//groupchat
+				loadAndDiaplayGroup(numGroup)
+
+			}
+		}
+	});
 
 	$(document).on("click", ".user-group", async function () {
 		let userId = $(this).data("userid")

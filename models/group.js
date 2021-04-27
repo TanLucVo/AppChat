@@ -2,22 +2,27 @@ const mongoose = require('mongoose')
 
 const groupSchema = mongoose.Schema({
 
-    roomName: {
-        type: String,
+	roomName: {
+		type: String,
 		required: false,
-    },
+	},
 	users: {
 		type: Array,
 		required: true,
-    },
-    updateAt: {
+	},
+	updateAt: {
 		type: Number,
 		required: true,
-    },
-    image: {
-        type: String,
+	},
+	image: {
+		type: String,
 		required: false,
-    }
+	},
+	lastMessage: {
+		type: Array,
+		required: false,
+	},
+
 
 
 })

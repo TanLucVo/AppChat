@@ -2,18 +2,22 @@ const mongoose = require('mongoose')
 
 const RoomSchema = mongoose.Schema({
 
-    roomName: {
-        type: String,
+	roomName: {
+		type: String,
 		required: false,
-    },
+	},
 	users: {
 		type: Array,
 		required: true,
-    },
-    updateAt: {
+	},
+	updateAt: {
 		type: Number,
 		required: true,
-    },
+	},
+	lastMessage: {
+		type: Array,
+		required: false,
+	},
 
 
 })

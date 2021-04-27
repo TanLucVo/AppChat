@@ -13,7 +13,7 @@ io.on("connection", function (client) {
     let users = Array.from(io.sockets.sockets.values()).map(socket=>({id:socket.id, userId:socket.userId}))
     client.on('disconnect', () => {
         console.log(client.id + "da roi khoi cuoc choi");
-        client.broadcast.emit("user-leave", client.id)
+        client.broadcast.emit("user-leave", {id:client.id, userId:client.userId})
     })
     //gui thogn tin nguoi online moi 
     client.broadcast.emit("new-user", {id:client.id, userId:client.userId})
