@@ -566,7 +566,7 @@ body.dark {
     }
     .room-container{
         padding:0px 8px;
-        min-height: 500px;
+        /* min-height: 500px; */
     }
     .right_chat {
         width: 100%;
