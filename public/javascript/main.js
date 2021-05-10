@@ -355,17 +355,19 @@ $(document).ready(function () {
 					let roomId = i._id;
 					let userId = i.users.filter(e => e.id != cookie).map(e => e.id)
 					let image = i.users.filter(e => e.id != cookie).map(e => e.image)
-
 					if (lastMessage === "" || !lastMessage) continue
 					try {
 						partner = i.users.filter(e => e.id !== cookie)
 						partner = partner[0].name
+					
 					} catch (error) {
 						console.log(error);
 						partner = ""
 					}
-
-					string += `<div class="user__left__item user_display d-flex align-items-center" data-roomid = ${roomId} data-userid = ${userId}>
+					let partnerId = i.users.filter(e => e.id !== cookie)
+					partnerId = partnerId[0].id
+					
+					string += `<div class="user__left__item user_display d-flex align-items-center" data-roomid = ${roomId} data-userid = ${partnerId}>
 									<div class="user__left__item__img">
 										<div class="status"></div>
 										<img src="${image[0]}"
@@ -878,17 +880,14 @@ $(document).ready(function () {
 				`)
 				}
 			} else {
-				if ($(".room-container[data-roomid=" + roomId + "]").children().last().hasClass("you")) {
-
+				if ($(".room-container[data-roomid=" + roomId + "]").children().last().hasClass("you") && $(".room-container[data-roomid=" + roomId + "]").children().last().children(".your_image").children('img').attr('src') === image ) {
 					let chatroom = $(".room-container[data-roomid=" + roomId + "]")
 
 					chatroom.children(".you").children(".your_message_group").append(`<div class="mess-container your_message" >
 																	<div class="mess">${message}</div>
 																</div>`)
 				} else {
-
 					let chatroom = $(".room-container[data-roomid=" + roomId + "]")
-
 					chatroom.append(`<div class="you">
 												<div class="your_image">
 													<img src=${image}

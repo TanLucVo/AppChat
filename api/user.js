@@ -60,7 +60,6 @@ router.post('/getRoomSigle', async function (req, res, next) {
             data: data
         })
 
-
     } catch (error) {
         console.log(error)
         res.status(500).send("Can't get data")
@@ -253,7 +252,6 @@ router.post('/newMessage', async function (req, res, next) {
                 }, {
                     returnNewDocument: true
                 })
-                console.log(test)
             } else {
                 await room.updateOne({
                     _id: roomId
